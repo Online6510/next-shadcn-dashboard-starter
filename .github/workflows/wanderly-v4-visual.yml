@@ -46,7 +46,7 @@ jobs:
           bunx playwright screenshot --browser chromium --viewport-size "1440,900" \
             --wait-for-timeout 1800 http://127.0.0.1:3100/map docs/screenshots/v4/map-desktop.png
           bunx playwright screenshot --browser chromium --viewport-size "1440,900" \
-            --wait-for-timeout 1600 http://127.0.0.1:3100/__visual/trip docs/screenshots/v4/trip-desktop.png
+            --wait-for-timeout 1600 http://127.0.0.1:3100/design-review-v4/trip docs/screenshots/v4/trip-desktop.png
           bunx playwright screenshot --browser chromium --viewport-size "390,844" \
             --wait-for-timeout 1100 http://127.0.0.1:3100/ docs/screenshots/v4/home-mobile.png
           bunx playwright screenshot --browser chromium --viewport-size "390,844" \
@@ -56,7 +56,7 @@ jobs:
           bunx playwright screenshot --browser chromium --viewport-size "390,844" \
             --wait-for-timeout 1600 http://127.0.0.1:3100/map docs/screenshots/v4/map-mobile.png
           bunx playwright screenshot --browser chromium --viewport-size "390,844" \
-            --wait-for-timeout 1400 http://127.0.0.1:3100/__visual/trip docs/screenshots/v4/trip-mobile.png
+            --wait-for-timeout 1400 http://127.0.0.1:3100/design-review-v4/trip docs/screenshots/v4/trip-mobile.png
       - name: Upload
         if: always()
         uses: actions/upload-artifact@v4
