@@ -91,7 +91,7 @@ export async function save(target: Target, previous: string, form: FormData) {
           entry.title
         );
       }
-      updateTrip(target.trip, (trip) => {
+      await updateTrip(target.trip, (trip) => {
         if (target.kind === 'stop') {
           const value = stopFields.parse(fields);
           if (!listDays(trip.start, trip.end).includes(value.day))
