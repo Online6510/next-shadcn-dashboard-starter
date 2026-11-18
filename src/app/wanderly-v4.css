@@ -484,3 +484,20 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .site-header .menu-dialog nav a[aria-current="page"]{background:#d4fa59;color:#0b2b20!important}
 .site-header .menu-dialog nav a:hover{background:#e0eee4;text-decoration:none}
 .site-header .menu-dialog .small-button{color:#102f25!important;background:#e8f1e8!important;border-color:#d8e6dd!important}
+
+/* Visual QA corrections: tablet workspace gets full canvas; mobile login presents the form above the fold. */
+@media(max-width:900px){
+ .v3-trip-shell{grid-template-columns:minmax(0,1fr);width:min(100% - 32px,100%)}
+ .v3-trip-shell .v3-workspace-sidebar{display:none}
+ .v3-trip-shell .v3-workspace-main{min-width:0}
+}
+@media(max-width:680px){
+ .v4-auth-hero{min-height:190px}
+ .v4-auth-hero-inner{padding:19px 21px}
+ .v4-auth-hero h2{font-size:clamp(1.7rem,7.8vw,2.1rem);letter-spacing:-.063em;line-height:1.08;margin:12px 0 0}
+ .v4-auth-hero-inner>p:not(.v4-auth-badge){display:none}
+ .v4-auth-badge{font-size:.6rem;padding:6px 10px}
+ .v4-auth-right{padding:22px 16px 95px}
+ .v4-auth-panel h1{font-size:clamp(2.3rem,9.5vw,3rem)}
+ .v4-auth-lead{font-size:.8rem;margin-bottom:16px}
+}
