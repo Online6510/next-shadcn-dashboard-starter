@@ -58,6 +58,11 @@ export function TripLayout({trip,query}:{
           </div>
         </div>
       </div>
+      {trip.aiBrief && <details className='v4-trip-ai-brief' open>
+        <summary>✧ AI аяллын зөвлөгөө · хянаж засварлах санал</summary>
+        <p>{trip.aiBrief}</p>
+        <small>AI-ийн санал нь баталгаатай зам, үнэ, цаг агаар эсвэл үйлчилгээний захиалга биш. Газрын зураг дээр газраа өөрөө нэмнэ үү.</small>
+      </details>}
       <details className='panel editor trip-settings'>
         <summary>Аяллын мэдээлэл засах</summary>
         <TripForm trip={trip} />

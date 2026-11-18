@@ -61,3 +61,18 @@ test('a trip can start without choosing from the curated destination list',()=>{
  }
  assert.equal(tripFields.safeParse({...input,coverLabel:'a'.repeat(101)}).success,false);
 });
+
+test('AI advice can be safely attached to an editable custom trip',()=>{
+ const trip=tripFields.safeParse({
+  title:'Миний аялал',start:'2026-12-02',end:'2026-12-04',
+  travelers:2,budget:500000,cover:'custom',
+  coverLabel:'AI туслахын санал',
+  aiBrief:'AI-ийн аяллын зөвлөгөө — баталгаагүй.'
+ });
+ assert.equal(trip.success,true);
+ if(trip.success)assert.match(trip.data.aiBrief||'','AI');
+ assert.equal(tripFields.safeParse({
+  title:'Аялал',start:'2026-12-02',end:'2026-12-04',
+  travelers:1,budget:0,cover:'custom',aiBrief:'x'.repeat(5001)
+ }).success,false);
+});

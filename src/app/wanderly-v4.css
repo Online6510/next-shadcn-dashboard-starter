@@ -616,3 +616,19 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .v4-chat-service-state{margin:11px 25px 0;padding:8px 13px;border-radius:11px;background:#d4fa591a;border:1px solid #d4fa5952;color:#e6f7d4;font-size:.75rem;line-height:1.5;font-weight:800}
 .v4-chat-service-state.unavailable{background:#ffbe7a18;border-color:#efbd7b80;color:#ffe2b9}
 .v4-chat-service-state small{display:block;font-size:.62rem;font-weight:550;color:#c3d9d4;margin-top:3px}
+
+/* Save AI chat answer as an editable owner-scoped trip, with no fabricated route */
+.v4-chat-trip-draft{margin-top:13px;border-top:1px solid #ffffff38;padding-top:11px}
+.v4-chat-save-button{font-size:.73rem;font-weight:850;background:#d4fa59;color:#0e3126;border:0;border-radius:10px;padding:10px 12px;line-height:1.35}
+.v4-chat-trip-fields{display:grid;gap:10px;margin-top:12px}
+.v4-chat-trip-fields>p{font-size:.72rem;color:#dbefeb!important}
+.v4-chat-trip-fields label{display:grid;gap:5px;font-size:.7rem;font-weight:800}
+.v4-chat-trip-fields input{border-radius:9px;padding:9px 10px;border:1px solid #b2cecc;background:#f7faf8;color:#173b30;min-width:0}
+.v4-chat-trip-fields .fields-row{gap:8px}
+.v4-chat-trip-submit{border:0;border-radius:10px;background:#d4fa59;color:#12332c;font-size:.8rem;font-weight:850;padding:12px}
+.v4-chat-trip-submit:disabled{opacity:.6}
+.v4-trip-ai-brief{margin-block:14px;padding:18px 23px;border:1px solid #d4e7de;border-radius:16px;background:linear-gradient(120deg,#ecf7e9,#ffffff)}
+.v4-trip-ai-brief summary{font-size:.88rem;font-weight:900;color:#175944;cursor:pointer}
+.v4-trip-ai-brief p{white-space:pre-wrap;line-height:1.9;color:#345b51;margin:13px 0 9px;font-size:.86rem}
+.v4-trip-ai-brief small{color:#607971;font-size:.69rem;line-height:1.6}
+@media(max-width:680px){.v4-chat-trip-fields .fields-row{grid-template-columns:1fr 1fr}.v4-chat-trip-fields input{width:100%}}

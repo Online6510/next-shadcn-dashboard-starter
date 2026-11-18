@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import {SaveChatAsTrip} from './save-chat-as-trip';
 import {useState,useRef,useEffect} from 'react';
 import {IconSend,IconSparkles,IconRoute,IconMap2,IconCalendarPlus,IconRobot} from '@tabler/icons-react';
 
@@ -78,7 +79,9 @@ export function AIChat({demo=false}:{demo?:boolean}){
    {messages.map((message,index)=><div className={'v4-chat-message v4-chat-'+message.role} key={index}>
     <span className='v4-chat-avatar'>{message.role==='assistant'?'✧':'Т'}</span>
     <div><small>{message.role==='assistant'?'Wanderly AI':'Та'}</small>
-     <p>{message.content}</p></div>
+     <p>{message.content}</p>
+     {message.role==='assistant' && !demo && <SaveChatAsTrip content={message.content}/>}
+    </div>
    </div>)}
    {loading&&<div className='v4-chat-thinking'><IconSparkles size={18}/> AI аяллын санааг боловсруулж байна…</div>}
    {error&&<p role='alert' className='v4-chat-error'>{error}</p>}
