@@ -61,6 +61,17 @@ jobs:
             --wait-for-timeout 1400 http://127.0.0.1:3100/design-review-v4/trip docs/screenshots/v4/trip-mobile.png
           bunx playwright screenshot --browser chromium --viewport-size "390,844" \
             --wait-for-timeout 900 http://127.0.0.1:3100/design-review-v4/ai docs/screenshots/v4/ai-mobile.png
+          # Tablet and compact-screen references complement 1440px/390px checks.
+          bunx playwright screenshot --browser chromium --viewport-size "1024,768" \
+            --wait-for-timeout 1000 http://127.0.0.1:3100/ docs/screenshots/v4/home-tablet-wide.png
+          bunx playwright screenshot --browser chromium --viewport-size "768,1024" \
+            --wait-for-timeout 1000 http://127.0.0.1:3100/ docs/screenshots/v4/home-tablet.png
+          bunx playwright screenshot --browser chromium --viewport-size "768,1024" \
+            --wait-for-timeout 1200 http://127.0.0.1:3100/map docs/screenshots/v4/map-tablet.png
+          bunx playwright screenshot --browser chromium --viewport-size "768,1024" \
+            --wait-for-timeout 1300 http://127.0.0.1:3100/design-review-v4/trip docs/screenshots/v4/trip-tablet.png
+          bunx playwright screenshot --browser chromium --viewport-size "360,780" \
+            --wait-for-timeout 1000 http://127.0.0.1:3100/login docs/screenshots/v4/login-compact.png
       - name: Interactive browser regression
         run: |
           WANDERLY_VISUAL_PREVIEW=1 bun run start --hostname 127.0.0.1 --port 3100 &
