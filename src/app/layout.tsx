@@ -10,6 +10,7 @@ import '@fontsource-variable/lora';
 import '@fontsource-variable/manrope';
 import './wanderly.css';
 import './wanderly-v3.css';
+import './wanderly-v4.css';
 
 export const metadata: Metadata = {
   title: { default: 'Wanderly — Монгол орноор аялъя', template: '%s | Wanderly' },
@@ -37,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Navigation />
             <AuthNav />
             <Link href='/trips/new' className='button header-action'>
-              Аялал үүсгэх <span aria-hidden='true'>→</span>
+              Аялал эхлэх <span aria-hidden='true'>→</span>
             </Link>
           </div>
         </header>

@@ -5,11 +5,12 @@ import { useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
 const pages = [
-  { href: '/explore', label: 'Газрууд' },
-  { href: '/trips', label: 'Миний аялал' },
+  { href: '/', label: 'Нүүр' },
+  { href: '/explore', label: 'Судлах' },
+  { href: '/trips', label: 'Аялал төлөвлөх' },
   { href: '/journal', label: 'Дурсамж' },
-  { href: '/trips/suggest', label: 'Төлөвлөгч' },
-  { href: '/settings/appearance', label: 'Өнгө ба дизайн' }
+  { href: '/trips/suggest', label: 'AI Туслах' },
+  { href: '/settings/appearance', label: 'Тохиргоо' }
 ];
 
 export function Navigation() {

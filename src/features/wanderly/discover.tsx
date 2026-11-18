@@ -63,8 +63,8 @@ function FeaturedPlaces() {
   );
 }
 
-export function Discover() {
-  const [search, setSearch] = useState('');
+export function Discover({initialQuery=''}:{initialQuery?:string}) {
+  const [search, setSearch] = useState(initialQuery);
   const [category, setCategory] = useState('');
   const [region, setRegion] = useState('');
   const results = destinations.filter(
