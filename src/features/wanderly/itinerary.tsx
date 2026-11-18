@@ -25,6 +25,7 @@ function Map({
   const [country, setCountry] = useState(false);
   const [tiles, setTiles] = useState(true);
   const [routing,setRouting]=useState(false);
+  const [mode,setMode]=useState<'drive'|'walk'|'bicycle'|'hike'>('drive');
   const [routeResult,setRouteResult]=useState<{
     geometry:{type:string;coordinates:number[][]|number[][][]};
     distance:number;time:number;
@@ -80,13 +81,21 @@ function Map({
       >
         {tiles ? 'Бүдүүвч харах' : 'Суурь зураг нээх'}
       </button>
-      {places.length > 1 && <div className='v4-route-controls'>
+      {places.length > 1 && places.length <= 20 && <div className='v4-route-controls'>
+        <label className='v4-route-mode'>Замын төрөл
+          <select value={mode} onChange={event=>{setMode(event.target.value as typeof mode);setRouteResult(null);setRouteError('')}}>
+            <option value='drive'>🚗 Машина</option>
+            <option value='walk'>🚶 Алхах</option>
+            <option value='bicycle'>🚲 Дугуй</option>
+            <option value='hike'>🥾 Явган аялал</option>
+          </select>
+        </label>
         <button type='button' className='small-button' disabled={routing} onClick={async()=>{
           setRouting(true);setRouteError('');setRouteResult(null);
           try {
             const response=await fetch('/api/geo/route',{
               method:'POST',headers:{'Content-Type':'application/json'},
-              body:JSON.stringify({waypoints:places.map(p=>({lat:p.lat,lon:p.lon})),mode:'drive'})
+              body:JSON.stringify({waypoints:places.map(p=>({lat:p.lat,lon:p.lon})),mode})
             });
             const result=await response.json();
             if(!response.ok) throw new Error(result.error||'Маршрут тооцоолж чадсангүй.');
@@ -99,9 +108,11 @@ function Map({
         }}>{routing?'Маршрут тооцоолж байна…':'🚗 Зам дагах маршрут тооцох'}</button>
         <button type='button' className='small-button' onClick={()=>{setRouteResult(null);setRouteError('')}}>Цэвэрлэх</button>
       </div>}
+      {places.length > 20 && <p className='meta' role='status'>Нэг дор 20 хүртэл зогсоолоор авто замын маршрут тооцож болно.</p>}
       {routeError && <p className='meta' role='status'>{routeError}</p>}
       {routeResult && <p className='v4-route-summary' role='status'>
-        Авто замын тооцоолол: {(routeResult.distance/1000).toFixed(1)} км ·
+        {mode === 'drive' ? 'Авто зам' : mode === 'walk' ? 'Алхах' : mode === 'bicycle' ? 'Дугуй' : 'Явган аялал'}:
+        {' '}{(routeResult.distance/1000).toFixed(1)} км ·
         ойролцоогоор {(routeResult.time/3600).toFixed(1)} цаг · Geoapify
       </p>}
       {failed && <p role='status'>Интернэтгүй горим — байршлын бүдүүвч</p>}

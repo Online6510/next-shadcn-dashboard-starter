@@ -424,3 +424,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
  .v4-ai-page .v4-chat-composer{flex-shrink:0}
  .v4-ai-page .v4-chat-disclaimer{flex-shrink:0}
 }
+
+.v4-route-controls{align-items:flex-end}
+.v4-route-mode{display:grid;gap:4px;min-width:148px;font-size:.69rem;font-weight:850;color:#295447}
+.v4-route-mode select{padding:6px 9px;border-radius:11px;background:white;min-height:34px;font-size:.75rem;border:1px solid #cfdddb}
+.v4-route-controls>button{min-height:35px}

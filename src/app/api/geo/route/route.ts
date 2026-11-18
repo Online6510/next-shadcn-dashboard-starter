@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { optionalUser } from '@/lib/wanderly/auth';
 import { serverSupabase } from '@/lib/wanderly/supabase';
 import { z } from 'zod';
+import { parseGeoapifyRoute } from '@/features/wanderly/routing';
 
 export const runtime='nodejs';
 const point=z.object({lat:z.number().min(-90).max(90),lon:z.number().min(-180).max(180)});
@@ -38,17 +39,12 @@ export async function POST(request:Request) {
   try {
     const response=await fetch(endpoint,{signal:AbortSignal.timeout(12000),cache:'no-store'});
     if(!response.ok)throw new Error('Unable to calculate route');
-    const result=await response.json() as {features?:Array<{
-      geometry?:{type?:string;coordinates?:number[][]|number[][][]};
-      properties?:{distance?:number;time?:number};
-    }>};
-    const feature=result.features?.[0];
-    if(!feature?.geometry||!Array.isArray(feature.geometry.coordinates))
-      throw new Error('No route geometry');
+    const result=parseGeoapifyRoute(await response.json());
+    if(!result)throw new Error('Missing or malformed provider geometry');
     return NextResponse.json({
       feature:{
-        type:'Feature',geometry:feature.geometry,
-        properties:{distance:feature.properties?.distance,time:feature.properties?.time}
+        type:'Feature',geometry:result.geometry,
+        properties:{distance:result.distance,time:result.time}
       },
       provider:'Geoapify',disclaimer:'Маршрут ба хугацаа нь үйлчилгээний тооцоолол; бодит замын нөхцөл, хөдөлгөөн өөр байж болно.'
     },{headers:{'Cache-Control':'private,no-store'}});
