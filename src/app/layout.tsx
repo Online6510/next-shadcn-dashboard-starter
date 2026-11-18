@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { SaveNotice } from '@/features/wanderly/save-notice';
+import { RevealObserver } from '@/features/wanderly/reveal-observer';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Brand } from '@/features/wanderly/visuals';
@@ -7,6 +8,7 @@ import { Navigation } from '@/features/wanderly/navigation';
 import '@fontsource-variable/lora';
 import '@fontsource-variable/manrope';
 import './wanderly.css';
+import './wanderly-v3.css';
 
 export const metadata: Metadata = {
   title: { default: 'Wanderly — Монгол орноор аялъя', template: '%s | Wanderly' },
@@ -16,7 +18,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang='mn'>
+    <html lang='mn' suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "try{var t=localStorage.getItem('wanderly-theme');if(['nature','midnight','desert'].includes(t||'')){document.documentElement.setAttribute('data-theme',t)}}catch(e){}"
+          }}
+        />
+      </head>
       <body>
         <a href='#main' className='skip'>
           Үндсэн хэсэг рүү
@@ -33,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Suspense fallback={null}>
           <SaveNotice />
         </Suspense>
+        <RevealObserver />
         <main id='main'>{children}</main>
         <footer className='site-footer'>
           <div className='container footer-inner'>

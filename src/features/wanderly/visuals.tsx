@@ -30,7 +30,7 @@ export function Cover({
 
 export function DestinationCard({ place }: { place: Destination }) {
   return (
-    <Link className='destination-card' href={'/explore/' + place.id}>
+    <Link className='destination-card' data-v3-reveal href={'/explore/' + place.id}>
       <div className='destination-photo'>
         <Cover image={place.image} label={place.name} />
         <span className='photo-tag'>{place.category}</span>

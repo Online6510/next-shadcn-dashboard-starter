@@ -1,14 +1,15 @@
 import Link from 'next/link';
-import { getTrip } from '@/features/wanderly/db';
+import { getTrips, getTrip } from '@/features/wanderly/db';
 import { destinations } from '@/features/wanderly/catalog';
 import { Cover, DestinationCard } from '@/features/wanderly/visuals';
 
 export const dynamic = 'force-dynamic';
 export default function Home() {
   const demo = getTrip('khuvsgul-demo');
+  const tripCount = getTrips().length;
   return (
     <>
-      <section className='hero'>
+      <section className='hero v3-hero'>
         <Cover image='hero' label='Хөвсгөлийн нуураас сэдэвлэсэн байгаль' priority />
         <div className='hero-shade' />
         <div className='container hero-content'>
@@ -16,12 +17,12 @@ export default function Home() {
             <span /> МОНГОЛ ОРНООР АЯЛЪЯ
           </p>
           <h1>
-            Аялал бүр
-            <br /> <em>дурсамж.</em>
+            Монгол орноор
+            <br /> <em>аялж, дурсамж бүтээ.</em>
           </h1>
           <p className='hero-text'>
-            Тайгын цэнхэр нуураас говийн алтан манхан хүртэл. Өөрийн хэмнэлээр Монгол орноо
-            нээгээрэй.
+            Тайгын цэнхэр нуур, говийн алтан манхан, уулсын чимээгүй оргил. Маршрутаа бүтээж,
+            аяллынхаа түүхийг нэг дор хадгалаарай.
           </p>
           <div className='actions'>
             <Link className='button light' href='/trips/new'>
@@ -32,12 +33,19 @@ export default function Home() {
             </Link>
           </div>
         </div>
+        <div className='container v3-hero-highlights' aria-label='Wanderly боломжууд'>
+          <div><strong>{destinations.length}</strong><span>Аяллын газрын санаа</span></div>
+          <div><strong>{tripCount}</strong><span>Хадгалсан аялал</span></div>
+          <div><strong>01 — 30</strong><span>Өдрөөр аяллаа төлөвлө</span></div>
+          <div><strong>06</strong><span>Зураг нэг дурсамжид</span></div>
+        </div>
         <div className='container hero-caption'>
           <a href='#featured'>↓ &nbsp; ОНЦЛОХ ГАЗРУУД</a>
           <span>⌖ &nbsp; ХӨВСГӨЛИЙН НУУРААС СЭДЭВЛЭВ</span>
         </div>
       </section>
-      <section className='container section' id='featured'>
+      <section className='container section v3-after-hero' data-v3-reveal id='featured'>
+        <div className='v3-editorial-intro'><span>WANDERLY / DISCOVER</span><p>Газрын зургийн цэг бүрээс шинэ түүх эхэлнэ.</p></div>
         <div className='section-heading'>
           <div>
             <p className='eyebrow'>МОНГОЛ ОРНЫГ НЭЭ</p>
@@ -53,7 +61,7 @@ export default function Home() {
           ))}
         </div>
       </section>
-      <section className='paper section'>
+      <section className='paper section' data-v3-reveal>
         <div className='container'>
           <p className='eyebrow'>АЯЛЛЫН ТЭМДЭГЛЭЛ</p>
           <h2>Замын турш, дурсамж бүр</h2>
@@ -72,7 +80,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className='container section'>
+      <section className='container section v3-story-section' data-v3-reveal>
         <div className='story-banner'>
           <div className='story-image'>
             <Cover image='lake' label='Нуурын эрэг' />
@@ -96,6 +104,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <section className='v3-end-cta'><div className='container'><p className='eyebrow'>ЧИНИЙ ДАРААГИЙН АЯЛАЛ</p><h2>Дараагийн дурсамж<br /><em>эндээс эхэлнэ.</em></h2><Link className='button light' href='/trips/new'>Аялал үүсгэх →</Link></div></section>
     </>
   );
 }

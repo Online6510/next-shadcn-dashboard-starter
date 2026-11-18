@@ -18,11 +18,12 @@ export default async function Journal({ params }: { params: Promise<{ id: string
   const cover = destinations.find((place) => place.id === trip.cover);
   const dates = [...new Set(entries.map((entry) => entry.date))];
   return (
-    <section className='journal-page'>
+    <section className='journal-page v3-journal-page'>
       <div className='container section'>
         <Link href='/journal' className='text-link'>
           ← Бүх дурсамж
         </Link>
+        <div className='v3-journal-title-line'><span>TRAVEL MEMORIES / АЯЛЛЫН ДУРСАМЖ</span><span>Түүх бүхэн үнэ цэнтэй.</span></div>
         <div className='journal-header journal-cover'>
           <Cover image={cover?.image || 'hero'} label={trip.title} priority />
           <div className='journal-cover-inner'>
@@ -53,9 +54,9 @@ export default async function Journal({ params }: { params: Promise<{ id: string
                 </a>
               ))}
             </nav>
-            <div className='journal-entries'>
+            <div className='journal-entries v3-scrapbook'>
               {dates.map((date) => (
-                <section className='chapter' key={date}>
+                <section className='chapter v3-scrapbook-chapter' key={date}>
                   <header>
                     <span className='eyebrow'>АЯЛЛЫН ТЭМДЭГЛЭЛ</span>
                     <h2>{dateLabel(date)}</h2>
@@ -63,8 +64,8 @@ export default async function Journal({ params }: { params: Promise<{ id: string
                   {entries
                     .filter((entry) => entry.date === date)
                     .map((entry) => (
-                      <article id={entry.id} className='journal-record' key={entry.id}>
-                        <div className='photo-frame'>
+                      <article id={entry.id} className='journal-record v3-memory-card' key={entry.id}>
+                        <div className='photo-frame v3-polaroid'>
                           <JournalPhoto
                             source={entry.image}
                             title={entry.title}
@@ -72,7 +73,7 @@ export default async function Journal({ params }: { params: Promise<{ id: string
                           />
                           <p>{entry.place || trip.title}</p>
                         </div>
-                        <div className='journal-copy'>
+                        <div className='journal-copy v3-story-note'>
                           <p className='eyebrow'>
                             {dateLabel(entry.date)}
                             {entry.mood ? ' · ' + entry.mood : ''}

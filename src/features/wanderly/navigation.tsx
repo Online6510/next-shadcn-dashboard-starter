@@ -8,7 +8,8 @@ const pages = [
   { href: '/explore', label: 'Газрууд' },
   { href: '/trips', label: 'Миний аялал' },
   { href: '/journal', label: 'Дурсамж' },
-  { href: '/trips/suggest', label: 'Төлөвлөгч' }
+  { href: '/trips/suggest', label: 'Төлөвлөгч' },
+  { href: '/settings/appearance', label: 'Өнгө ба дизайн' }
 ];
 
 export function Navigation() {

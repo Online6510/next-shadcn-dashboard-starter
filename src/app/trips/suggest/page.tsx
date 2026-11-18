@@ -5,12 +5,13 @@ export const metadata = { title: 'Ухаалаг санал' };
 
 export default function TravelSuggestion() {
   return (
-    <section className='container section'>
+    <section className='container section v3-smart-planner'>
       <Link className='text-link' href='/trips'>
         ← Миний аялал
       </Link>
       <p className='eyebrow suggestion-kicker'>АЯЛЛЫН ТӨЛӨВЛӨГӨӨ</p>
-      <h1>Ухаалаг санал</h1>
+      <h1>Миний дараагийн <em>аялал</em></h1>
+      <p className='v3-rule-badge'>✧ Ухаалаг төлөвлөгч · Дүрэмд суурилсан санал</p>
       <p className='intro'>
         Сонирхолд нийцсэн газрыг эхэнд эрэмбэлж, аймаг болон аяллын хэмнэлээр өдрүүдэд хуваарилна.
         Саналыг хадгалаад өөрийнхөөрөө засаж болно.
