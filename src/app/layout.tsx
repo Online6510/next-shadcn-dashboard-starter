@@ -7,6 +7,7 @@ import { Navigation } from '@/features/wanderly/navigation';
 import '@fontsource-variable/lora';
 import '@fontsource-variable/manrope';
 import './wanderly.css';
+import './wanderly-v3.css';
 
 export const metadata: Metadata = {
   title: { default: 'Wanderly — Монгол орноор аялъя', template: '%s | Wanderly' },
@@ -16,7 +17,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang='mn'>
+    <html lang='mn' suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "try{var t=localStorage.getItem('wanderly-theme');if(['nature','midnight','desert'].includes(t||'')){document.documentElement.setAttribute('data-theme',t)}}catch(e){}"
+          }}
+        />
+      </head>
       <body>
         <a href='#main' className='skip'>
           Үндсэн хэсэг рүү
