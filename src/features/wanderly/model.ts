@@ -26,7 +26,7 @@ export const tripFields = z
 
 const coordinate = (min:number,max:number) =>
   z.preprocess(value => value === '' || value === null || value === undefined
-    ? undefined : Number(value), z.number().finite().min(min).max(max).optional());
+    ? undefined : Number(value), z.number().min(min).max(max).optional());
 
 export const stopFields = z.object({
   destination: z.union([destinationId,z.literal('custom')]),
