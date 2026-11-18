@@ -9,12 +9,24 @@ export function Budget({ trip, day }: { trip: Trip; day: string }) {
   const [category, setCategory] = useState('');
   const records = trip.expenses.filter((expense) => !category || expense.category === category);
   const totals = budgetTotals(trip);
+  const colors = ['#2b6754', '#d6b58c', '#b97755', '#8da58f', '#7b8d9c'];
+  let start = 0;
+  const slices = totals.byCategory.map(({ amount }, index) => {
+    const end = start + (totals.spent ? (amount / totals.spent) * 100 : 0);
+    const value = colors[index] + ' ' + start.toFixed(2) + '% ' + end.toFixed(2) + '%';
+    start = end;
+    return value;
+  });
+  const donutBackground = totals.spent
+    ? 'conic-gradient(' + slices.join(',') + ')'
+    : 'conic-gradient(var(--v3-border) 0% 100%)';
   return (
     <section id='budget' className='budget-section'>
-      <div>
-        <p className='eyebrow'>ЗАРДАЛ</p>
-        <h2>Аяллын төсөв</h2>
-      </div>
+      <header className='v3-budget-header'><div>
+        <p className='eyebrow'>FINANCIAL OVERVIEW / ЗАРДАЛ</p>
+        <h2>Аяллын <em>төсөв</em></h2>
+        <p>Бодит зарлага, төлөвлөсөн зардал болон үлдэгдэл нэг дор.</p>
+      </div></header>
       <div className='budget-grid'>
         <div className='panel budget-summary'>
           <dl className='metrics'>
@@ -45,6 +57,21 @@ export function Budget({ trip, day }: { trip: Trip; day: string }) {
             max={100}
             aria-label='Төсвийн зарцуулалт'
           />
+          <div className='v3-budget-visual' aria-label='Зардлын хуваарилалт'>
+            <div className='v3-donut' role='img' aria-label={`Бодит зарцуулалт ${money(totals.spent)}. Таван ангиллын хуваарилалт.`} style={{ background: donutBackground }}>
+              <div className='v3-donut-core'><small>Нийт зарлага</small><strong>{money(totals.spent)}</strong></div>
+            </div>
+            <div className='v3-budget-legend'>
+              {totals.byCategory.map(({ category, amount }, index) => (
+                <div key={category}><span className='v3-legend-dot' style={{ background: colors[index] }} />
+                  <span>{category}</span><strong>{money(amount)}</strong></div>
+              ))}
+            </div>
+          </div>
+          <div className='v3-budget-comparison'>
+            <div><span>Төлөвлөсөн зогсоолын зардал</span><strong>{money(totals.planned)}</strong></div>
+            <div><span>Бодит төлсөн зардал</span><strong>{money(totals.spent)}</strong></div>
+          </div>
           <div className='chart' aria-label='Ангилал тус бүрийн бодит зардал'>
             {totals.byCategory.map((item) => (
               <div className='chart-row' key={item.category}>

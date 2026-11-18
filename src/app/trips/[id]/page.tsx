@@ -27,11 +27,27 @@ export default async function TripPage({
   const selection = destinations.find((place) => place.id === query.add)?.id;
   const totals = budgetTotals(trip);
   return (
-    <section className='container section trip-section' data-panel={query.panel}>
-      <Link className='text-link' href='/trips'>
+    <section className='v3-trip-shell trip-section' data-panel={query.panel}>
+      <aside className='v3-workspace-sidebar' aria-label='Аяллын ажлын хэсгийн цэс'>
+        <Link href='/' className='v3-sidebar-brand'>✧ Wanderly<span>.</span></Link>
+        <p className='v3-sidebar-label'>АЯЛЛЫН ОРОН ЗАЙ</p>
+        <nav className='v3-sidebar-links'>
+          <Link href='/trips'>▧ Миний аялал</Link>
+          <Link href={'/trips/' + id + '?day=' + day + '#timeline'} aria-current='page'>◉ Өдрийн хөтөлбөр</Link>
+          <Link href={'/trips/' + id + '?day=' + day + '&panel=trip-map#trip-map'}>⌖ Газрын зураг</Link>
+          <Link href={'/trips/' + id + '?day=' + day + '&panel=budget#budget'}>◫ Төсөв ба зардал</Link>
+          <Link href={'/journal/' + id}>▤ Дурсамжийн дэвтэр</Link>
+        </nav>
+        <div className='v3-sidebar-footer'><span>АЯЛЛЫН МЭДЭЭЛЭЛ</span>
+          <strong>{days.length} өдөр</strong>
+          <small>{trip.stops.length} зогсоол · {trip.entries.length} дурсамж</small>
+        </div>
+      </aside>
+      <div className='v3-workspace-main'>
+      <Link className='text-link v3-workspace-back' href='/trips'>
         ← Миний аялал
       </Link>
-      <div className='trip-cover'>
+      <div className='trip-cover v3-trip-cover'>
         <Cover image={cover?.image || ''} label={trip.title} />
         <div className='trip-cover-copy'>
           <p className='eyebrow'>
@@ -90,6 +106,7 @@ export default async function TripPage({
         />
       </div>
       <Budget day={day} trip={trip} />
+      </div>
     </section>
   );
 }
