@@ -36,7 +36,7 @@ export default async function TripPage({
           <Link href={'/trips/' + id + '?day=' + day + '#timeline'} aria-current='page'>◉ Өдрийн хөтөлбөр</Link>
           <Link href={'/trips/' + id + '?day=' + day + '&panel=trip-map#trip-map'}>⌖ Газрын зураг</Link>
           <Link href={'/trips/' + id + '?day=' + day + '&panel=budget#budget'}>◫ Төсөв ба зардал</Link>
-          <Link href={'/journal/' + id}>▤ Дурсамжийн дэвтэр</Link>
+          <Link href={'/journal/' + id}>▤ Аяллын түүх</Link>
         </nav>
         <div className='v3-sidebar-footer'><span>АЯЛЛЫН МЭДЭЭЛЭЛ</span>
           <strong>{days.length} өдөр</strong>
