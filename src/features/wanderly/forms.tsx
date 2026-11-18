@@ -3,6 +3,7 @@
 import { cloneElement, useActionState, useId } from 'react';
 import type { ReactElement, ReactNode } from 'react';
 import { save } from './actions';
+import { UploadPicker } from './upload-picker';
 import { categories, destinations, dateLabel } from './catalog';
 import type { Entry, Expense, Stop, Trip } from './model';
 
@@ -248,6 +249,7 @@ export function EntryForm({ trip, entry }: { trip: Trip; entry?: Entry }) {
       <Field label='Түүх'>
         <textarea name='story' rows={4} required maxLength={5000} defaultValue={entry?.story} />
       </Field>
+      <UploadPicker existing={entry?.photos} />
       <Field label='Зургийн холбоос'>
         <input name='image' maxLength={2048} placeholder='https://…' defaultValue={entry?.image} />
       </Field>

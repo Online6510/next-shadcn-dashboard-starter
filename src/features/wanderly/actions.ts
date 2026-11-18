@@ -1,5 +1,7 @@
 'use server';
 
+import type { Photo } from './model';
+import { storePhotos, discard, photoLimit } from './media';
 import { randomUUID } from 'node:crypto';
 import { redirect } from 'next/navigation';
 import { createTrip, deleteTrip, updateTrip } from './db';
@@ -24,6 +26,8 @@ export async function save(target: Target, previous: string, form: FormData) {
   void previous;
   const fields = Object.fromEntries(form);
   let next = target.trip ? '/trips/' + target.trip : '/trips';
+  let added: Photo[] = [];
+  const removed: Photo[] = [];
   try {
     if (target.kind === 'plan') {
       const input = plannerFields.parse({ ...fields, interests: form.getAll('interests') });
@@ -64,9 +68,13 @@ export async function save(target: Target, previous: string, form: FormData) {
         next = '/trips/' + id + selected;
       }
     } else if (target.kind === 'delete-trip') {
-      deleteTrip(target.trip);
+      removed.push(...deleteTrip(target.trip));
       next = '/trips';
     } else {
+      if (target.kind === 'entry') {
+        const entry = entryFields.parse(fields);
+        added = await storePhotos(form.getAll('uploads').filter((item): item is File => typeof item !== 'string' && Boolean(item.name)), entry.title);
+      }
       updateTrip(target.trip, (trip) => {
         if (target.kind === 'stop') {
           const value = stopFields.parse(fields);
@@ -80,7 +88,14 @@ export async function save(target: Target, previous: string, form: FormData) {
           next += '#budget';
         }
         if (target.kind === 'entry') {
-          replace(trip.entries, { ...entryFields.parse(fields), id: target.id || randomUUID() });
+          const original = trip.entries.find((item) => item.id === target.id);
+          if (target.id && !original) throw new Error('Дурсамж устгагдсан байна.');
+          const removals = new Set(form.getAll('removePhoto'));
+          const keep = (original?.photos || []).filter(photo => !removals.has(photo.id));
+          removed.push(...(original?.photos || []).filter(photo => removals.has(photo.id)));
+          const photos = [...keep,...added];
+          if (photos.length > photoLimit) throw new Error('Нэг дурсамжид 6 хүртэл зураг хадгална.');
+          replace(trip.entries, { ...entryFields.parse(fields), photos, id: target.id || randomUUID() });
           next = '/journal/' + trip.id;
         }
         if (target.kind === 'remove') {
@@ -95,6 +110,7 @@ export async function save(target: Target, previous: string, form: FormData) {
             next += '#budget';
           }
           if (target.collection === 'entries') {
+            removed.push(...(trip.entries.find(entry => entry.id === id)?.photos || []));
             trip.entries = trip.entries.filter((entry) => entry.id !== id);
             next = '/journal/' + trip.id;
           }
@@ -112,9 +128,11 @@ export async function save(target: Target, previous: string, form: FormData) {
       });
     }
   } catch (error) {
+    await discard(added);
     if (error instanceof Error && /[А-Яа-яӨөҮү]/.test(error.message) && error.name !== 'ZodError')
       return error.message;
     return 'Мэдээллийг шалгана уу. Огноо, дүн болон заавал бөглөх талбаруудыг нягтлаарай.';
   }
+  await discard(removed);
   redirect(next);
 }

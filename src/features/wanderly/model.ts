@@ -59,7 +59,8 @@ export const entryFields = z.object({
 
 export type Stop = z.infer<typeof stopFields> & { id: string };
 export type Expense = z.infer<typeof expenseFields> & { id: string };
-export type Entry = z.infer<typeof entryFields> & { id: string };
+export type Photo = { id: string; alt: string; width: number; height: number };
+export type Entry = z.infer<typeof entryFields> & { id: string; photos?: Photo[] };
 export type Trip = z.infer<typeof tripFields> & {
   id: string;
   stops: Stop[];
