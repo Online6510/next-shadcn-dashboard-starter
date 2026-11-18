@@ -17,7 +17,9 @@ export function UploadPicker({ existing = [] }: { existing?: Photo[] }) {
       values.length > 6 ||
       values.some(
         (file) =>
-          file.size > 5242880 || !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)
+          !file.size ||
+          file.size > 5242880 ||
+          !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)
       )
     ) {
       input.current.value = '';

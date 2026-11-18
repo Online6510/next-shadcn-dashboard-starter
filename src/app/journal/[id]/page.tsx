@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { listDays } from '@/features/wanderly/model';
 import { getTrip } from '@/features/wanderly/db';
 import { destinations, dateLabel } from '@/features/wanderly/catalog';
 import { ActionForm, EntryForm } from '@/features/wanderly/forms';
@@ -28,7 +29,8 @@ export default async function Journal({ params }: { params: Promise<{ id: string
             <p className='eyebrow'>ДУРСАМЖИЙН ДЭВТЭР</p>
             <h1>{trip.title}</h1>
             <p className='intro'>
-              {dateLabel(trip.start)} – {dateLabel(trip.end)} · {entries.length} дурсамж
+              {dateLabel(trip.start)} – {dateLabel(trip.end)} ·{' '}
+              {listDays(trip.start, trip.end).length} өдөр · {entries.length} дурсамж
             </p>
             <Link className='text-link' href={'/trips/' + id}>
               Аяллын төлөвлөгөө →

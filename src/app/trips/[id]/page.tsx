@@ -15,7 +15,7 @@ export default async function TripPage({
   searchParams
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ day?: string; add?: string }>;
+  searchParams: Promise<{ day?: string; add?: string; panel?: string }>;
 }) {
   const { id } = await params;
   const query = await searchParams;
@@ -27,7 +27,7 @@ export default async function TripPage({
   const selection = destinations.find((place) => place.id === query.add)?.id;
   const totals = budgetTotals(trip);
   return (
-    <section className='container section trip-section'>
+    <section className='container section trip-section' data-panel={query.panel}>
       <Link className='text-link' href='/trips'>
         ← Миний аялал
       </Link>
@@ -62,9 +62,9 @@ export default async function TripPage({
         />
       </details>
       <nav className='workspace-shortcuts' aria-label='Аяллын хэсгүүд'>
-        <a href='#timeline'>Хөтөлбөр</a>
-        <a href='#trip-map'>Газрын зураг</a>
-        <a href='#budget'>Төсөв</a>
+        <Link href={'?day=' + day + '&panel=timeline#timeline'}>Хөтөлбөр</Link>
+        <Link href={'?day=' + day + '&panel=trip-map#trip-map'}>Газрын зураг</Link>
+        <Link href={'?day=' + day + '&panel=budget#budget'}>Төсөв</Link>
       </nav>
       <div className='workspace-grid'>
         <nav className='day-list' aria-label='Аяллын өдрүүд'>
@@ -89,7 +89,7 @@ export default async function TripPage({
           selection={selection}
         />
       </div>
-      <Budget trip={trip} />
+      <Budget day={day} trip={trip} />
     </section>
   );
 }

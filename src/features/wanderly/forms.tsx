@@ -194,10 +194,18 @@ export function StopForm({
   );
 }
 
-export function ExpenseForm({ trip, expense }: { trip: Trip; expense?: Expense }) {
+export function ExpenseForm({
+  trip,
+  expense,
+  day
+}: {
+  trip: Trip;
+  expense?: Expense;
+  day?: string;
+}) {
   return (
     <ActionForm
-      target={{ kind: 'expense', trip: trip.id, id: expense?.id }}
+      target={{ kind: 'expense', trip: trip.id, id: expense?.id, day }}
       label={expense ? 'Зардал хадгалах' : 'Зардал нэмэх'}
     >
       <Field label='Тайлбар'>

@@ -61,10 +61,13 @@ export default function TileMap({
     };
   }, [places, select]);
   useEffect(() => {
-    markers.current.forEach((marker, id) => {
+    for (const place of places) {
+      const id = place.stop.id;
+      const marker = markers.current.get(id);
+      if (!marker) continue;
       marker.getElement()?.classList.toggle('chosen', id === active);
       marker.setZIndexOffset(id === active ? 500 : 0);
-    });
+    }
     const marker = active && markers.current.get(active);
     if (marker) map.current?.panInside(marker.getLatLng(), { animate: false });
   }, [active, places]);

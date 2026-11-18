@@ -62,3 +62,46 @@ test('reject mismatched content type', async () =>
       'x'
     )
   ));
+
+test('preview order only rearranges recommended places in their own day', () => {
+  const choice = { ...options, budget: 1500000, pace: 'Идэвхтэй' as const, region: 'Хөвсгөл' };
+  const first = suggest(choice);
+  const ids = first.itinerary[0].picks.map((item) => item.place.id).toReversed();
+  assert.deepEqual(
+    suggest(choice, ['invalid', ...ids]).itinerary[0].picks.map((item) => item.place.id),
+    ids
+  );
+});
+
+test('JPEG and PNG become durable WebP files and partial batches roll back', async () => {
+  const { mkdtemp, readdir, rm } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const sharp = (await import('sharp')).default;
+  const dir = await mkdtemp(join(tmpdir(), 'wanderly-media-test-'));
+  const previous = process.env.WANDERLY_DATA_DIR;
+  process.env.WANDERLY_DATA_DIR = dir;
+  try {
+    const image = sharp({ create: { width: 16, height: 10, channels: 3, background: '#173d35' } });
+    const jpg = new File(
+      [new Uint8Array(await image.clone().jpeg().toBuffer())],
+      '../original.jpg',
+      { type: 'image/jpeg' }
+    );
+    const png = new File([new Uint8Array(await image.clone().png().toBuffer())], 'other.png', {
+      type: 'image/png'
+    });
+    const photos = await storePhotos([jpg, png], 'Аялал');
+    assert.equal(photos.length, 2);
+    for (const photo of photos)
+      assert.equal((await sharp(mediaPath(photo.id)).metadata()).format, 'webp');
+    await assert.rejects(
+      storePhotos([jpg, new File(['bad'], 'x.png', { type: 'image/png' })], 'Аялал')
+    );
+    assert.equal((await readdir(join(dir, 'uploads'))).length, 2);
+  } finally {
+    if (previous === undefined) delete process.env.WANDERLY_DATA_DIR;
+    else process.env.WANDERLY_DATA_DIR = previous;
+    await rm(dir, { recursive: true, force: true });
+  }
+});

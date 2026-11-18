@@ -25,7 +25,7 @@ function endDate(start: string, duration: number) {
   return new Date(Date.parse(start) + (duration - 1) * 86_400_000).toISOString().slice(0, 10);
 }
 
-export function suggest(input: PlannerInput) {
+export function suggest(input: PlannerInput, order: string[] = []) {
   const end = endDate(input.start, input.duration);
   const days = listDays(input.start, end);
   const matched = destinations
@@ -41,6 +41,7 @@ export function suggest(input: PlannerInput) {
     capacity * days.length,
     Math.max(1, Math.floor(input.budget / 60000))
   );
+  const rank = new Map(order.map((id, index) => [id, index]));
   const visited = new Set<string>();
   const itinerary = days.map((day) => {
     const next = matched.find(({ place }) => !visited.has(place.id));
@@ -51,7 +52,12 @@ export function suggest(input: PlannerInput) {
             .slice(0, Math.min(capacity, proposedCount - visited.size))
         : [];
     for (const { place } of picks) visited.add(place.id);
-    return { day, picks };
+    const sorted = order.length
+      ? picks.toSorted(
+          (a, b) => (rank.get(a.place.id) ?? order.length) - (rank.get(b.place.id) ?? order.length)
+        )
+      : picks;
+    return { day, picks: sorted };
   });
   const cost = visited.size ? Math.floor((input.budget * 0.35) / visited.size) : 0;
   const trip = tripFields.parse({ ...input, end, travelers: 1, cover: matched[0]?.place.id });

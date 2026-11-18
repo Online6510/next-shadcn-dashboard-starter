@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { mkdir, writeFile, unlink } from 'node:fs/promises';
+import { mkdir, open, unlink } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import sharp from 'sharp';
 import type { Photo } from './model';
@@ -50,13 +50,18 @@ export async function storePhotos(files: File[], alt: string) {
       const id = randomUUID();
       const path = mediaPath(id);
       await mkdir(resolve(path, '..'), { recursive: true });
+      const handle = await open(path, 'wx');
       photos.push({ id, alt, width: info.width, height: info.height });
-      await writeFile(path, data, { flag: 'wx' });
+      try {
+        await handle.writeFile(data);
+      } finally {
+        await handle.close();
+      }
     }
     return photos;
   } catch (error) {
     await discard(photos);
     if (error instanceof Error && /[А-Яа-я]/.test(error.message)) throw error;
-    throw new Error('Зургийг уншиж хадгалж чадсангүй. Өөр файл сонгоно уу.',{cause:error});
+    throw new Error('Зургийг уншиж хадгалж чадсангүй. Өөр файл сонгоно уу.', { cause: error });
   }
 }

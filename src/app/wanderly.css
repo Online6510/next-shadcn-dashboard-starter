@@ -1452,3 +1452,43 @@ progress {
     display: none;
   }
 }
+
+/* Fragment links keep each phone panel accessible from history and shared local URLs. */
+@media (max-width: 620px) {
+  .trip-section #trip-map:not(:target),
+  .trip-section #budget:not(:target) {
+    display: none;
+  }
+  .trip-section:has(#trip-map:target, #budget:target) .timeline {
+    display: none;
+  }
+  .trip-section:has(#budget:target) .workspace-grid {
+    display: none;
+  }
+  .trip-section:not(:has(#trip-map:target, #budget:target)) a[href='#timeline'],
+  .trip-section:has(#trip-map:target) .workspace-shortcuts a[href='#trip-map'],
+  .trip-section:has(#budget:target) .workspace-shortcuts a[href='#budget'] {
+    color: var(--forest);
+    box-shadow: inset 0 -3px currentColor;
+  }
+}
+@media (max-width: 620px) {
+  .trip-section[data-panel='budget']:not(:has(#timeline:target, #trip-map:target)) #budget {
+    display: block;
+  }
+  .trip-section[data-panel='budget']:not(:has(#timeline:target, #trip-map:target)) .workspace-grid {
+    display: none;
+  }
+  .trip-section[data-panel='trip-map']:not(:has(#timeline:target, #budget:target)) #trip-map {
+    display: block;
+  }
+  .trip-section[data-panel='trip-map']:not(:has(#timeline:target, #budget:target)) .timeline {
+    display: none;
+  }
+  .trip-section[data-panel='budget'] .workspace-shortcuts a[href$='#budget'],
+  .trip-section[data-panel='trip-map'] .workspace-shortcuts a[href$='#trip-map'],
+  .trip-section:not([data-panel]) .workspace-shortcuts a[href$='#timeline'],
+  .trip-section[data-panel='timeline'] .workspace-shortcuts a[href$='#timeline'] {
+    box-shadow: inset 0 -3px var(--forest);
+  }
+}

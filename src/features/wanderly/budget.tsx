@@ -5,7 +5,7 @@ import { ActionForm, ExpenseForm } from './forms';
 import { budgetTotals } from './model';
 import type { Trip } from './model';
 
-export function Budget({ trip }: { trip: Trip }) {
+export function Budget({ trip, day }: { trip: Trip; day: string }) {
   const [category, setCategory] = useState('');
   const records = trip.expenses.filter((expense) => !category || expense.category === category);
   const totals = budgetTotals(trip);
@@ -72,7 +72,7 @@ export function Budget({ trip }: { trip: Trip }) {
           </label>
           <details className='inline-details'>
             <summary>＋ Зардал нэмэх</summary>
-            <ExpenseForm trip={trip} />
+            <ExpenseForm day={day} trip={trip} />
           </details>
           {!records.length && <p className='meta'>Зардал бүртгээгүй байна.</p>}
           {records.map((expense) => (
@@ -86,11 +86,17 @@ export function Budget({ trip }: { trip: Trip }) {
               </small>
               <details className='inline-details'>
                 <summary>Засах</summary>
-                <ExpenseForm trip={trip} expense={expense} />
+                <ExpenseForm day={day} trip={trip} expense={expense} />
               </details>
               <ActionForm
                 compact
-                target={{ kind: 'remove', trip: trip.id, collection: 'expenses', id: expense.id }}
+                target={{
+                  kind: 'remove',
+                  trip: trip.id,
+                  collection: 'expenses',
+                  id: expense.id,
+                  day
+                }}
                 label='Устгах'
                 confirm='Энэ зардлыг устгах уу?'
               />

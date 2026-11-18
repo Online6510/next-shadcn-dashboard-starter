@@ -9,7 +9,8 @@ import type { PlannerInput } from './planner';
 export function PlannerForm() {
   const [input, setInput] = useState<PlannerInput>();
   const [error, setError] = useState('');
-  const plan = input && suggest(input);
+  const [order, setOrder] = useState<string[]>([]);
+  const plan = input && suggest(input, order);
   return (
     <div className='budget-grid'>
       <div className='panel'>
@@ -30,6 +31,7 @@ export function PlannerForm() {
               setError('Огноогоо шалгаад 1–3 сонирхол сонгоно уу.');
               return;
             }
+            setOrder([]);
             setInput(result.data);
           }}
         >
@@ -111,7 +113,7 @@ export function PlannerForm() {
                 <h3>{dateLabel(day)}</h3>
                 {picks.length ? (
                   <ul>
-                    {picks.map(({ place, matches }) => (
+                    {picks.map(({ place, matches }, index) => (
                       <li key={place.id}>
                         <strong>{place.name}</strong> · {place.region}
                         <br />
@@ -120,6 +122,22 @@ export function PlannerForm() {
                             ? `Сонирхолтой нийцсэн · ${place.category}`
                             : 'Тухайн аймгийн өөр нэг газар'}
                         </small>
+                        {index > 0 && (
+                          <button
+                            className='small-button'
+                            type='button'
+                            onClick={() => {
+                              const ids = plan.itinerary.flatMap((group) =>
+                                group.picks.map((item) => item.place.id)
+                              );
+                              const i = ids.indexOf(place.id);
+                              [ids[i], ids[i - 1]] = [ids[i - 1], ids[i]];
+                              setOrder(ids);
+                            }}
+                          >
+                            ↑ Дээш
+                          </button>
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -129,6 +147,9 @@ export function PlannerForm() {
               </article>
             ))}
             <ActionForm target={{ kind: 'plan' }} label='Аялал болгож хадгалах'>
+              {order.map((id) => (
+                <input type='hidden' key={id} name='order' value={id} />
+              ))}
               {Object.entries(input).flatMap(([key, value]) =>
                 (Array.isArray(value) ? value : [value]).map((item) => (
                   <input key={key + item} type='hidden' name={key} value={item} />

@@ -4,6 +4,7 @@ import type { Photo } from './model';
 import { storePhotos, discard, photoLimit } from './media';
 import { randomUUID } from 'node:crypto';
 import { ZodError } from 'zod';
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createTrip, deleteTrip, updateTrip } from './db';
 import { plannerFields, suggest } from './planner';
@@ -12,8 +13,14 @@ import { entryFields, expenseFields, listDays, stopFields, tripFields } from './
 type Target =
   | { kind: 'plan'; trip?: never }
   | { kind: 'trip'; trip?: string }
-  | { kind: 'stop' | 'expense' | 'entry'; trip: string; id?: string }
-  | { kind: 'remove'; collection: 'stops' | 'expenses' | 'entries'; trip: string; id: string }
+  | { kind: 'stop' | 'expense' | 'entry'; trip: string; id?: string; day?: string }
+  | {
+      kind: 'remove';
+      collection: 'stops' | 'expenses' | 'entries';
+      trip: string;
+      id: string;
+      day?: string;
+    }
   | { kind: 'move'; trip: string; id: string; direction: -1 | 1 }
   | { kind: 'order'; trip: string; id: string; before: string }
   | { kind: 'delete-trip'; trip: string };
@@ -33,7 +40,7 @@ export async function save(target: Target, previous: string, form: FormData) {
   try {
     if (target.kind === 'plan') {
       const input = plannerFields.parse({ ...fields, interests: form.getAll('interests') });
-      const plan = suggest(input);
+      const plan = suggest(input, form.getAll('order').slice(0, 21).map(String));
       const id = randomUUID();
       createTrip({
         ...plan.trip,
@@ -78,7 +85,7 @@ export async function save(target: Target, previous: string, form: FormData) {
         added = await storePhotos(
           form
             .getAll('uploads')
-            .filter((item): item is File => typeof item !== 'string' && Boolean(item.name)),
+            .filter((item): item is File => typeof item !== 'string' && item.size > 0),
           entry.title
         );
       }
@@ -92,7 +99,12 @@ export async function save(target: Target, previous: string, form: FormData) {
         }
         if (target.kind === 'expense') {
           replace(trip.expenses, { ...expenseFields.parse(fields), id: target.id || randomUUID() });
-          next += '#budget';
+          next +=
+            '?panel=budget' +
+            (target.day && listDays(trip.start, trip.end).includes(target.day)
+              ? '&day=' + target.day
+              : '') +
+            '#budget';
         }
         if (target.kind === 'entry') {
           const original = trip.entries.find((item) => item.id === target.id);
@@ -118,7 +130,12 @@ export async function save(target: Target, previous: string, form: FormData) {
           }
           if (target.collection === 'expenses') {
             trip.expenses = trip.expenses.filter((entry) => entry.id !== id);
-            next += '#budget';
+            next +=
+              '?panel=budget' +
+              (target.day && listDays(trip.start, trip.end).includes(target.day)
+                ? '&day=' + target.day
+                : '') +
+              '#budget';
           }
           if (target.collection === 'entries') {
             removed.push(...(trip.entries.find((entry) => entry.id === id)?.photos || []));
@@ -172,6 +189,12 @@ export async function save(target: Target, previous: string, form: FormData) {
     return 'Мэдээллийг шалгана уу. Огноо, дүн болон заавал бөглөх талбаруудыг нягтлаарай.';
   }
   await discard(removed);
+  if (target.trip) {
+    revalidatePath('/trips/' + target.trip);
+    revalidatePath('/journal/' + target.trip);
+  }
+  revalidatePath('/trips');
+  revalidatePath('/journal');
   const [route, anchor] = next.split('#');
   redirect(route + (route.includes('?') ? '&' : '?') + 'saved=1' + (anchor ? '#' + anchor : ''));
 }
