@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+import { SaveNotice } from '@/features/wanderly/save-notice';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Brand } from '@/features/wanderly/visuals';
@@ -28,6 +30,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </Link>
           </div>
         </header>
+        <Suspense fallback={null}>
+          <SaveNotice />
+        </Suspense>
         <main id='main'>{children}</main>
         <footer className='site-footer'>
           <div className='container footer-inner'>

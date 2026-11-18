@@ -1,9 +1,13 @@
-import { dateLabel, money } from './catalog';
+'use client';
+import { useState } from 'react';
+import { categories, dateLabel, money } from './catalog';
 import { ActionForm, ExpenseForm } from './forms';
 import { budgetTotals } from './model';
 import type { Trip } from './model';
 
 export function Budget({ trip }: { trip: Trip }) {
+  const [category, setCategory] = useState('');
+  const records = trip.expenses.filter((expense) => !category || expense.category === category);
   const totals = budgetTotals(trip);
   return (
     <section id='budget' className='budget-section'>
@@ -33,7 +37,9 @@ export function Budget({ trip }: { trip: Trip }) {
               <dd>{money(totals.planned)}</dd>
             </div>
           </dl>
-          <p className='meta'>Төсвийн {totals.percent}% зарцуулсан</p>
+          <p className='meta'>
+            {trip.budget ? 'Төсвийн ' + totals.percent + '% зарцуулсан' : 'Нийт төсөв 0 ₮'}
+          </p>
           <progress
             value={Math.min(totals.percent, 100)}
             max={100}
@@ -55,12 +61,21 @@ export function Budget({ trip }: { trip: Trip }) {
         </div>
         <div className='panel'>
           <h3>Бодит зардлууд</h3>
+          <label>
+            Зардлаар шүүх
+            <select value={category} onChange={(e) => setCategory(e.target.value)}>
+              <option value=''>Бүх ангилал</option>
+              {categories.map((value) => (
+                <option key={value}>{value}</option>
+              ))}
+            </select>
+          </label>
           <details className='inline-details'>
             <summary>＋ Зардал нэмэх</summary>
             <ExpenseForm trip={trip} />
           </details>
-          {!trip.expenses.length && <p className='meta'>Зардал бүртгээгүй байна.</p>}
-          {trip.expenses.map((expense) => (
+          {!records.length && <p className='meta'>Зардал бүртгээгүй байна.</p>}
+          {records.map((expense) => (
             <article className='expense-record' key={expense.id}>
               <div className='panel-heading'>
                 <strong>{expense.note}</strong>

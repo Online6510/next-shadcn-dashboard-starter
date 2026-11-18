@@ -1,12 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import dynamic from 'next/dynamic';
+import { useTransition, useCallback, useMemo, useState } from 'react';
 import { destinations, dateLabel, money } from './catalog';
+import { save } from './actions';
 import { ActionForm, StopForm } from './forms';
 import type { Stop } from './model';
 import boundary from './boundary.json';
 import lakeBoundary from './lake-boundary.json';
 
+const TileMap = dynamic(() => import('./tile-map'), { ssr: false });
 const countryBounds = { left: 86, right: 121, bottom: 40, top: 54 };
 
 function Map({
@@ -19,10 +22,20 @@ function Map({
   select: (id: string) => void;
 }) {
   const [country, setCountry] = useState(false);
-  const places = stops.flatMap((stop) => {
-    const place = destinations.find((item) => item.id === stop.destination);
-    return place ? [{ ...place, stop }] : [];
-  });
+  const [tiles, setTiles] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const offline = useCallback(() => {
+    setTiles(false);
+    setFailed(true);
+  }, []);
+  const places = useMemo(
+    () =>
+      stops.flatMap((stop) => {
+        const place = destinations.find((item) => item.id === stop.destination);
+        return place ? [{ ...place, stop }] : [];
+      }),
+    [stops]
+  );
   const active = places.find((place) => place.stop.id === selected);
   const bounds =
     country || !places.length
@@ -42,38 +55,55 @@ function Map({
         <button
           type='button'
           className='small-button'
-          onClick={() => setCountry(!country)}
+          onClick={() => {
+            setCountry(!country);
+            setTiles(false);
+          }}
           aria-pressed={country}
         >
           {country ? 'Ойртуулах' : 'Монгол орон'}
         </button>
       </div>
-      <div className='map' aria-label='Өдрийн зогсоолуудын газрын зураг'>
-        <svg viewBox='0 0 100 100' preserveAspectRatio='none' aria-hidden='true'>
-          <polygon points={boundary.map(([lon, lat]) => x(lon) + ',' + y(lat)).join(' ')} />
-          <polygon
-            className='map-lake'
-            points={lakeBoundary.map(([lon, lat]) => x(lon) + ',' + y(lat)).join(' ')}
-          />
-        </svg>
-        <span className='compass' aria-hidden='true'>
-          ↑<br />Х
-        </span>
-        {places.map((place, i) => (
-          <button
-            type='button'
-            title={place.name}
-            key={place.stop.id}
-            className={'map-pin' + (selected === place.stop.id ? ' active-pin' : '')}
-            style={{ left: x(place.lon) + '%', top: y(place.lat) + '%' }}
-            aria-label={`Зогсоол ${i + 1}, ${place.name}`}
-            aria-pressed={selected === place.stop.id}
-            onClick={() => select(place.stop.id)}
-          >
-            {i + 1}
-          </button>
-        ))}
-      </div>
+      <button
+        className='small-button'
+        onClick={() => {
+          setTiles(!tiles);
+          setFailed(false);
+        }}
+      >
+        {tiles ? 'Бүдүүвч харах' : 'Суурь зураг нээх'}
+      </button>
+      {failed && <p role='status'>Интернэтгүй горим — байршлын бүдүүвч</p>}
+      {tiles ? (
+        <TileMap places={places} active={selected} select={select} offline={offline} />
+      ) : (
+        <div className='map' aria-label='Өдрийн зогсоолуудын газрын зураг'>
+          <svg viewBox='0 0 100 100' preserveAspectRatio='none' aria-hidden='true'>
+            <polygon points={boundary.map(([lon, lat]) => x(lon) + ',' + y(lat)).join(' ')} />
+            <polygon
+              className='map-lake'
+              points={lakeBoundary.map(([lon, lat]) => x(lon) + ',' + y(lat)).join(' ')}
+            />
+          </svg>
+          <span className='compass' aria-hidden='true'>
+            ↑<br />Х
+          </span>
+          {places.map((place, i) => (
+            <button
+              type='button'
+              title={place.name}
+              key={place.stop.id}
+              className={'map-pin' + (selected === place.stop.id ? ' active-pin' : '')}
+              style={{ left: x(place.lon) + '%', top: y(place.lat) + '%' }}
+              aria-label={`Зогсоол ${i + 1}, ${place.name}`}
+              aria-pressed={selected === place.stop.id}
+              onClick={() => select(place.stop.id)}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
+      )}
       {active ? (
         <p className='map-caption'>
           <a
@@ -108,10 +138,13 @@ export function Itinerary({
   selection?: string;
 }) {
   const [selected, select] = useState(stops[0]?.id);
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState('');
   const active = stops.some((stop) => stop.id === selected) ? selected : stops[0]?.id;
   return (
     <>
-      <div className='timeline'>
+      <div className='timeline' id='timeline' aria-busy={pending}>
+        {error && <p role='alert'>{error}</p>}
         <div className='panel-heading'>
           <div>
             <p className='eyebrow'>ӨДРИЙН ХӨТӨЛБӨР</p>
@@ -132,6 +165,22 @@ export function Itinerary({
             >
               <button
                 type='button'
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const id = e.dataTransfer.getData('application/wanderly-stop');
+                  if (!stops.some((item) => item.id === id) || id === stop.id) return;
+                  startTransition(async () => {
+                    const message = await save(
+                      { kind: 'order', trip, id, before: stop.id },
+                      '',
+                      new FormData()
+                    );
+                    if (message) setError(message);
+                  });
+                }}
+                draggable={!pending}
+                onDragStart={(e) => e.dataTransfer.setData('application/wanderly-stop', stop.id)}
                 className='stop-title'
                 onClick={() => select(stop.id)}
                 aria-pressed={active === stop.id}
@@ -176,7 +225,7 @@ export function Itinerary({
           );
         })}
       </div>
-      <aside>
+      <aside id='trip-map'>
         <Map stops={stops} selected={active} select={select} />
       </aside>
     </>

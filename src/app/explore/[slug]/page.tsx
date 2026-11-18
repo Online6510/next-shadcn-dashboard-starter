@@ -39,6 +39,19 @@ export default async function Destination({ params }: { params: Promise<{ slug: 
           <Link href={'/trips/new?destination=' + place.id} className='button'>
             Шинэ аялалд нэмэх →
           </Link>
+          <details className='inline-details'>
+            <summary>Аяллын өмнөх зөвлөмж</summary>
+            <ul>
+              <li>Явах өдрийн цаг агаар, замын нөхцөлийг орон нутгаас лавлаарай.</li>
+              <li>Ундны ус, буцах унаагаа урьдчилан төлөвлөөрэй.</li>
+            </ul>
+            <a
+              className='text-link'
+              href={`https://www.openstreetmap.org/?mlat=${place.lat}&mlon=${place.lon}#map=11/${place.lat}/${place.lon}`}
+            >
+              Байршил харах →
+            </a>
+          </details>
           {trips.length > 0 && (
             <details className='inline-details'>
               <summary>Одоо байгаа аялалд нэмэх</summary>

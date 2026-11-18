@@ -52,7 +52,9 @@ export function createTrip(trip: Trip) {
 
 export function deleteTrip(id: string) {
   const row = db().prepare('DELETE FROM trips WHERE id = ? RETURNING document').get(id);
-  return row ? (JSON.parse(String(row.document)) as Trip).entries.flatMap(entry => entry.photos || []) : [];
+  return row
+    ? (JSON.parse(String(row.document)) as Trip).entries.flatMap((entry) => entry.photos || [])
+    : [];
 }
 
 export function updateTrip(id: string, change: (trip: Trip) => void) {

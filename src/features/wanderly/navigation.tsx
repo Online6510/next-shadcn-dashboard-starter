@@ -1,29 +1,47 @@
 'use client';
 
 import Link from 'next/link';
+import { useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
 const pages = [
   { href: '/explore', label: 'Газрууд' },
   { href: '/trips', label: 'Миний аялал' },
-  { href: '/journal', label: 'Дурсамж' }
+  { href: '/journal', label: 'Дурсамж' },
+  { href: '/trips/suggest', label: 'Төлөвлөгч' }
 ];
 
 export function Navigation() {
   const current = usePathname();
+  const dialog = useRef<HTMLDialogElement>(null);
+  const links = pages.map(({ href, label }) => (
+    <Link
+      key={href}
+      href={href}
+      aria-current={href === current ? 'page' : undefined}
+      onClick={() => dialog.current?.close()}
+    >
+      {label}
+    </Link>
+  ));
   return (
-    <nav aria-label='Үндсэн цэс'>
-      {pages.map(({ href, label }) => (
-        <Link
-          key={href}
-          href={href}
-          aria-current={
-            current === href ? 'page' : current.startsWith(href + '/') ? 'location' : undefined
-          }
-        >
-          {label}
-        </Link>
-      ))}
-    </nav>
+    <>
+      <nav className='desktop-links' aria-label='Үндсэн цэс'>
+        {links}
+      </nav>
+      <button
+        className='menu-toggle small-button'
+        onClick={() => dialog.current?.showModal()}
+        aria-haspopup='dialog'
+      >
+        ☰ Цэс
+      </button>
+      <dialog ref={dialog} className='menu-dialog' aria-label='Үндсэн цэс'>
+        <form method='dialog'>
+          <button className='small-button'>Хаах ×</button>
+        </form>
+        <nav>{links}</nav>
+      </dialog>
+    </>
   );
 }

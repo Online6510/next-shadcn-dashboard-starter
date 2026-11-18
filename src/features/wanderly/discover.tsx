@@ -69,7 +69,10 @@ export function Discover() {
   const [region, setRegion] = useState('');
   const results = destinations.filter(
     (place) =>
-      (place.name + ' ' + place.region).toLowerCase().includes(search.trim().toLowerCase()) &&
+      [place.name, place.region, ...place.tags]
+        .join(' ')
+        .toLowerCase()
+        .includes(search.trim().toLowerCase()) &&
       (!category || category === place.category) &&
       (!region || region === place.region)
   );
@@ -109,6 +112,18 @@ export function Discover() {
       <p className='results' aria-live='polite'>
         {results.length} газар
       </p>
+      {!browsing && (
+        <button
+          className='small-button'
+          onClick={() => {
+            setCategory('');
+            setRegion('');
+            setSearch('');
+          }}
+        >
+          Шүүлт арилгах
+        </button>
+      )}
       {browsing && <FeaturedPlaces />}
       {results.length ? (
         <div className='destination-grid'>

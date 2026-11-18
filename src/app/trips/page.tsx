@@ -6,9 +6,17 @@ import { Cover } from '@/features/wanderly/visuals';
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Миний аялал' };
 
-export default function Trips() {
+export default async function Trips({
+  searchParams
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  const { status: selected } = await searchParams;
   const trips = getTrips();
   const today = mongoliaToday();
+  const statusOf = (trip: (typeof trips)[number]) =>
+    today < trip.start ? 'Төлөвлөсөн' : today > trip.end ? 'Дууссан' : 'Үргэлжилж буй';
+  const visible = selected ? trips.filter((t) => statusOf(t) === selected) : trips;
   return (
     <section className='container section'>
       <div className='section-heading'>
@@ -26,9 +34,20 @@ export default function Trips() {
           </Link>
         </div>
       </div>
-      {trips.length ? (
+      <nav className='trip-filters' aria-label='Аяллын төлөв'>
+        {['', 'Төлөвлөсөн', 'Үргэлжилж буй', 'Дууссан'].map((s) => (
+          <Link
+            key={s}
+            aria-current={(selected || '') === s ? 'page' : undefined}
+            href={s ? '/trips?status=' + encodeURIComponent(s) : '/trips'}
+          >
+            {s || 'Бүгд'}
+          </Link>
+        ))}
+      </nav>
+      {visible.length ? (
         <div className='destination-grid'>
-          {trips.map((trip) => {
+          {visible.map((trip) => {
             const cover = destinations.find((place) => place.id === trip.cover);
             const status =
               today < trip.start ? 'Төлөвлөсөн' : today > trip.end ? 'Дууссан' : 'Үргэлжилж буй';
@@ -47,7 +66,8 @@ export default function Trips() {
                     <span aria-hidden='true'>→</span>
                   </div>
                   <p>
-                    {trip.travelers} аялагч · {money(trip.budget)}
+                    {trip.id === 'khuvsgul-demo' ? 'Жишээ аялал · ' : ''}
+                    {trip.stops.length} зогсоол · {trip.travelers} аялагч · {money(trip.budget)}
                   </p>
                 </div>
               </Link>

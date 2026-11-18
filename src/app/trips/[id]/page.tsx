@@ -61,6 +61,11 @@ export default async function TripPage({
           confirm='Аяллыг бүх зогсоол, зардал, тэмдэглэлтэй нь устгах уу?'
         />
       </details>
+      <nav className='workspace-shortcuts' aria-label='Аяллын хэсгүүд'>
+        <a href='#timeline'>Хөтөлбөр</a>
+        <a href='#trip-map'>Газрын зураг</a>
+        <a href='#budget'>Төсөв</a>
+      </nav>
       <div className='workspace-grid'>
         <nav className='day-list' aria-label='Аяллын өдрүүд'>
           <p className='eyebrow'>ӨДРҮҮД</p>

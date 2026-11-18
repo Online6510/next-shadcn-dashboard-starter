@@ -1,8 +1,11 @@
 import Link from 'next/link';
+import { getTrip } from '@/features/wanderly/db';
 import { destinations } from '@/features/wanderly/catalog';
 import { Cover, DestinationCard } from '@/features/wanderly/visuals';
 
+export const dynamic = 'force-dynamic';
 export default function Home() {
+  const demo = getTrip('khuvsgul-demo');
   return (
     <>
       <section className='hero'>
@@ -76,15 +79,17 @@ export default function Home() {
           </div>
           <div className='story-copy'>
             <p className='eyebrow'>ЖИШЭЭ АЯЛАЛ</p>
-            <h2>Хөвсгөлийн гурван өдөр</h2>
+            <h2>{demo?.title || 'Дурсамжийн дэвтэр'}</h2>
             <p>
-              Хатгалын эргээс эхэлсэн аяллын хөтөлбөр, төсөв, гэрэл зурагтай тэмдэглэлийг үзээрэй.
+              {demo
+                ? demo.stops.length + ' зогсоол · ' + demo.entries.length + ' дурсамж'
+                : 'Аяллын түүх, гэрэл зургаа нэг дэвтэрт хадгалаарай.'}
             </p>
             <div className='actions'>
-              <Link className='button' href='/trips/khuvsgul-demo'>
-                Жишээ аялал үзэх →
+              <Link className='button' href={demo ? '/trips/' + demo.id : '/trips'}>
+                {demo ? 'Жишээ аялал үзэх' : 'Аяллууд үзэх'} →
               </Link>
-              <Link className='text-link' href='/journal/khuvsgul-demo'>
+              <Link className='text-link' href={demo ? '/journal/' + demo.id : '/journal'}>
                 Дурсамж унших →
               </Link>
             </div>
