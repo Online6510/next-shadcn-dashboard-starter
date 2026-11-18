@@ -4,7 +4,7 @@ import { serverSupabase } from '@/lib/wanderly/supabase';
 import { z } from 'zod';
 
 export const runtime='nodejs';
-const point=z.object({lat:z.number().finite().min(-90).max(90),lon:z.number().finite().min(-180).max(180)});
+const point=z.object({lat:z.number().min(-90).max(90),lon:z.number().min(-180).max(180)});
 const requestSchema=z.object({
   waypoints:z.array(point).min(2).max(20),
   mode:z.enum(['drive','walk','bicycle','hike']).default('drive')
