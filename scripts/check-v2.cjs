@@ -30,7 +30,7 @@ async function main() {
         ['/trips/new', 'new-trip'],
         [tripDemo + '#budget', 'budget']
       ]) {
-        const response = await page.goto(base + route, { waitUntil: 'networkidle' });
+        const response = await page.goto(base + route, { waitUntil: 'load' });
         assert.equal(response.status(), 200, route);
         await page.evaluate(async () => {
           await document.fonts.ready;
@@ -53,7 +53,7 @@ async function main() {
       }
     }
     console.log('Desktop/mobile views rendered; no broken images or horizontal overflow');
-    await page.goto(base + '/explore', { waitUntil: 'networkidle' });
+    await page.goto(base + '/explore', { waitUntil: 'load' });
     await page.getByRole('button', { name: 'Дараагийн онцлох газар' }).click();
     await page.waitForFunction(() => document.querySelector('.featured-slider').scrollLeft > 0);
     await page.getByLabel('Хайх').fill('Хөвсгөл');
