@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { generateText } from 'ai';
 import { z } from 'zod';
 import { optionalUser } from '@/lib/wanderly/auth';
-import { serverSupabase } from '@/lib/wanderly/supabase';
+import { reserveAiRequest } from '@/lib/wanderly/ai-quota';
 import { destinations } from '@/features/wanderly/catalog';
 
 export const runtime='nodejs';
@@ -30,14 +30,9 @@ export async function POST(request:Request){
  }catch{return NextResponse.json({error:'Хүсэлт буруу форматтай.'},{status:400});}
  const parsed=schema.safeParse(requestBody);
  if(!parsed.success)return NextResponse.json({error:'Асуултаа 3–1200 тэмдэгтэд багтаана уу.'},{status:400});
- const supabase=await serverSupabase();
- const {count,error}=await supabase.from('wanderly_ai_usage')
-  .select('id',{count:'exact',head:true}).eq('owner_id',user.id)
-  .gte('requested_at',new Date(Date.now()-86400000).toISOString());
- if(error)return NextResponse.json({error:'AI ашиглалтын мэдээллийг шалгаж чадсангүй.'},{status:503});
- if((count||0)>=5)return NextResponse.json({error:'AI туслахын 24 цагийн 5 удаагийн хязгаарт хүрсэн байна.'},{status:429});
- const {error:quotaError}=await supabase.from('wanderly_ai_usage').insert({owner_id:user.id});
- if(quotaError)return NextResponse.json({error:'AI хүсэлтийг бүртгэж чадсангүй.'},{status:503});
+ const quota=await reserveAiRequest();
+ if(quota==='limit')return NextResponse.json({error:'AI туслахын 24 цагийн 5 удаагийн хязгаарт хүрсэн байна.'},{status:429});
+ if(quota!=='ok')return NextResponse.json({error:'AI ашиглалтын хязгаарыг шалгаж чадсангүй.'},{status:503});
  const catalogue=destinations.map(place=>place.name+' ('+place.region+')').join(', ');
  try{
   const response=await generateText({

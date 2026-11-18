@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { generateText, Output } from 'ai';
 import { optionalUser } from '@/lib/wanderly/auth';
-import { serverSupabase } from '@/lib/wanderly/supabase';
+import { reserveAiRequest } from '@/lib/wanderly/ai-quota';
 import { plannerFields } from '@/features/wanderly/planner';
 import { aiPlanSchema } from '@/features/wanderly/ai-schema';
 import { destinations } from '@/features/wanderly/catalog';
@@ -29,15 +29,9 @@ export async function POST(request: Request) {
   const parsed=plannerFields.safeParse(raw);
   if(!parsed.success)
     return NextResponse.json({error:'Аяллын хугацаа, сонирхол, төсвөө шалгана уу.'},{status:400});
-  const supabase=await serverSupabase();
-  const cutoff=new Date(Date.now()-24*60*60*1000).toISOString();
-  const {count,error:quotaError}=await supabase.from('wanderly_ai_usage')
-    .select('id',{head:true,count:'exact'})
-    .eq('owner_id',user.id).gte('requested_at',cutoff);
-  if(quotaError) return NextResponse.json({error:'AI ашиглалтын хязгаарыг шалгаж чадсангүй.'},{status:503});
-  if((count||0)>=5) return NextResponse.json({error:'24 цагийн AI саналын 5 удаагийн хязгаарт хүрсэн байна.'},{status:429});
-  const {error:usageError}=await supabase.from('wanderly_ai_usage').insert({owner_id:user.id});
-  if(usageError) return NextResponse.json({error:'AI ашиглалтыг бүртгэж чадсангүй.'},{status:503});
+  const quota=await reserveAiRequest();
+  if(quota==='limit')return NextResponse.json({error:'24 цагийн AI хүсэлтийн 5 удаагийн хязгаарт хүрсэн байна.'},{status:429});
+  if(quota!=='ok')return NextResponse.json({error:'AI ашиглалтын хязгаарыг шалгаж чадсангүй.'},{status:503});
 
   const input=parsed.data;
   const catalog=destinations.filter((p)=>!input.region || input.region===p.region)
