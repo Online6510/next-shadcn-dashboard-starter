@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 type ThemeId = 'nature' | 'midnight' | 'desert';
 const themeNames: Record<ThemeId, string> = {
@@ -38,31 +38,32 @@ function isTheme(value: unknown): value is ThemeId {
   return value === 'nature' || value === 'midnight' || value === 'desert';
 }
 
+function getSelectedTheme(): ThemeId {
+  if (typeof document === 'undefined') return 'nature';
+  const current = document.documentElement.getAttribute('data-theme');
+  return isTheme(current) ? current : 'nature';
+}
+
+function subscribeTheme(callback: () => void) {
+  window.addEventListener('wanderly-theme-change', callback);
+  window.addEventListener('storage', callback);
+  return () => {
+    window.removeEventListener('wanderly-theme-change', callback);
+    window.removeEventListener('storage', callback);
+  };
+}
+
 export function ThemePicker() {
-  const [selected, setSelected] = useState<ThemeId>('nature');
-
-  useEffect(() => {
-    const current = document.documentElement.getAttribute('data-theme');
-    if (isTheme(current)) setSelected(current);
-
-    const onStorage = (event: StorageEvent) => {
-      if (event.key !== 'wanderly-theme') return;
-      const next = isTheme(event.newValue) ? event.newValue : 'nature';
-      document.documentElement.setAttribute('data-theme', next);
-      setSelected(next);
-    };
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, []);
+  const selected = useSyncExternalStore(subscribeTheme, getSelectedTheme, () => 'nature');
 
   function choose(id: ThemeId) {
     document.documentElement.setAttribute('data-theme', id);
     try {
       window.localStorage.setItem('wanderly-theme', id);
     } catch {
-      // The visual change still works when browser storage is unavailable.
+      // Theme still changes in browsers that block localStorage.
     }
-    setSelected(id);
+    window.dispatchEvent(new Event('wanderly-theme-change'));
   }
 
   return (
