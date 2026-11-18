@@ -2,20 +2,22 @@
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import type { Destination } from './catalog';
+import type { GeoPlace } from './places';
 import type { Stop } from './model';
 
-export type PlacePin = Destination & { stop: Stop };
+export type PlacePin = GeoPlace & { stop: Stop };
 export default function TileMap({
   places,
   active,
   select,
-  offline
+  offline,
+  route
 }: {
   places: PlacePin[];
   active?: string;
   select: (id: string) => void;
   offline: () => void;
+  route?: {type:string;coordinates:number[][]|number[][][]};
 }) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
@@ -71,6 +73,19 @@ export default function TileMap({
     const marker = active && markers.current.get(active);
     if (marker) map.current?.panInside(marker.getLatLng(), { animate: false });
   }, [active, places]);
+  useEffect(()=>{
+    const instance=map.current;
+    if(!instance || !route)return;
+    // Geoapify returns lon,lat; Leaflet accepts lat,lon.
+    const coords=route.type==='MultiLineString'
+      ? (route.coordinates as number[][][]).flat()
+      : (route.coordinates as number[][]);
+    const line=L.polyline(coords.filter(p=>p.length>=2).map(p=>[p[1],p[0]] as L.LatLngTuple),{
+      color:'#2563eb',weight:5,opacity:.88,lineJoin:'round'
+    }).addTo(instance);
+    if(line.getLatLngs().length)instance.fitBounds(line.getBounds().pad(.16),{maxZoom:11});
+    return ()=>{line.remove()};
+  },[route]);
   return (
     <div ref={container} className='tile-map' aria-label='Зогсоолын интерактив газрын зураг' />
   );

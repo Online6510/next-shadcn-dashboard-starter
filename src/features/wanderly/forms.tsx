@@ -4,6 +4,7 @@ import { cloneElement, useActionState, useId } from 'react';
 import type { ReactElement, ReactNode } from 'react';
 import { save } from './actions';
 import { UploadPicker } from './upload-picker';
+import { PlacePicker } from './place-picker';
 import { categories, destinations, dateLabel } from './catalog';
 import type { Entry, Expense, Stop, Trip } from './model';
 
@@ -55,18 +56,6 @@ export function Field({
       <label htmlFor={id}>{label}</label>
       {cloneElement(children, { id })}
     </div>
-  );
-}
-
-function DestinationSelect({ value, id }: { value?: string; id?: string }) {
-  return (
-    <select id={id} name='destination' defaultValue={value || destinations[0].id}>
-      {destinations.map((place) => (
-        <option key={place.id} value={place.id}>
-          {place.name}
-        </option>
-      ))}
-    </select>
   );
 }
 
@@ -148,10 +137,8 @@ export function StopForm({
       target={{ kind: 'stop', trip, id: stop?.id }}
       label={stop ? 'Зогсоол хадгалах' : 'Зогсоол нэмэх'}
     >
+      <PlacePicker stop={stop} selection={selection}/>
       <div className='fields-row'>
-        <Field label='Очих газар'>
-          <DestinationSelect value={stop?.destination || selection} />
-        </Field>
         <Field label='Аяллын өдөр'>
           <select name='day' defaultValue={stop?.day || day}>
             {days.map((date) => (
