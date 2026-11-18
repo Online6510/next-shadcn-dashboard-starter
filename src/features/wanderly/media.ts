@@ -4,6 +4,7 @@ import { serverSupabase } from '@/lib/wanderly/supabase';
 import { requireUser } from '@/lib/wanderly/auth';
 import { normalizePhoto, mediaObjectPath, assertPhotoCount } from './image-transform';
 
+export { mediaObjectPath, photoLimit } from './image-transform';
 const bucket = 'wanderly-journal';
 
 export async function discard(photos: Photo[]) {
