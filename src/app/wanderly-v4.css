@@ -467,3 +467,20 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .v4-auth-explore a:hover{text-decoration:underline}
 @media(max-width:1000px){.v4-auth-layout{grid-template-columns:.75fr 1.25fr}.v4-auth-hero{min-height:720px}.v4-auth-right{padding:35px}}
 @media(max-width:760px){.v4-auth-layout{display:block}.v4-auth-hero{min-height:260px}.v4-auth-hero-inner{padding:28px}.v4-auth-hero h2{font-size:2.6rem;margin:13px 0}.v4-auth-hero-inner>p:not(.v4-auth-badge){font-size:.8rem}.v4-auth-hero-metrics{display:none}.v4-auth-right{padding:28px 17px 98px}.v4-auth-panel h1{font-size:3rem}.v4-auth-lead{font-size:.84rem;margin-bottom:20px}.v4-login-form{padding:14px;border-radius:17px}.v4-auth-form{padding:20px 4px 6px}.v4-auth-panel .v4-overline{font-size:.61rem}}
+
+/* Prevent overcrowded 7-link desktop nav at tablet widths. Show real accessible menu. */
+@media (min-width:681px) and (max-width:1240px){
+ .site-header .header-inner{
+  grid-template-columns:minmax(0,1fr) auto auto auto;
+  width:min(100% - 48px,1400px);
+  gap:14px;
+ }
+ .site-header .desktop-links{display:none}
+ .site-header .menu-toggle{display:inline-flex;align-items:center;justify-content:center;min-height:38px;border-radius:999px;padding:7px 14px;font-size:.78rem}
+ .site-header .header-action{min-height:38px;padding:7px 14px}
+}
+.site-header .menu-dialog{max-height:min(90svh,680px);overflow:auto;color:#173b32;background:#f8fafb;border:1px solid #e0e7e9;border-radius:20px;box-shadow:0 25px 80px #0b283666}
+.site-header .menu-dialog nav a{display:block;color:#173b32!important;border-radius:12px;padding:10px 15px;background:#f2f6f3;font-weight:850}
+.site-header .menu-dialog nav a[aria-current="page"]{background:#d4fa59;color:#0b2b20!important}
+.site-header .menu-dialog nav a:hover{background:#e0eee4;text-decoration:none}
+.site-header .menu-dialog .small-button{color:#102f25!important;background:#e8f1e8!important;border-color:#d8e6dd!important}
