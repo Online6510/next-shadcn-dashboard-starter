@@ -10,7 +10,7 @@ const pages = [
   { href: '/map', label: 'Газрын зураг' },
   { href: '/trips', label: 'Аялал төлөвлөх' },
   { href: '/journal', label: 'Дурсамж' },
-  { href: '/trips/suggest', label: 'AI Туслах' },
+  { href: '/ai', label: 'AI Туслах' },
   { href: '/settings/appearance', label: 'Тохиргоо' }
 ];
 
