@@ -72,6 +72,8 @@ async function main(){
   assert.equal(favorites.authenticated,false,'Guest favorites should not imply a logged-in account');
   assert.equal(favorites.mutationStatus,401,'Guest must never write favorites');
   assert.equal(favorites.aiAuthenticated,false,'Guest must not receive private AI quota data');
+  const exportRes=await page.request.get(origin+'/api/trips/khuvsgul-demo/export?format=gpx');
+  assert.equal(exportRes.status(),401,'Trip GPX/CSV/ICS exports reject unauthenticated visitors');
   await page.goto(origin+'/design-review-v4/journal',{waitUntil:'load'});
   assert.ok(await page.locator('.v3-scrapbook-chapter').count()>=1,'Real journal entries should render');
   await page.goto(origin+'/design-review-v4/budget',{waitUntil:'load'});
