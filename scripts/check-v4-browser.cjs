@@ -54,6 +54,28 @@ async function main(){
    assert.equal(await page.locator('.v4-custom-fields input[name="customName"]').first().inputValue(),
     'Өөрийн сонгосон газар','Trip stop editor accepts arbitrary place');
   }
+  // Public safety: accounts and private APIs must not allow anonymous mutation.
+  await page.goto(origin+'/explore',{waitUntil:'load'});
+  await page.getByRole('button',{name:'Байгаль',exact:true}).last().click();
+  assert.equal(await page.getByRole('button',{name:'Байгаль',exact:true}).last().getAttribute('aria-pressed'),'true',
+    'Editorial category filter should be interactive');
+  const favorites=await page.evaluate(async()=>{
+    const list=await fetch('/api/favorites');
+    const data=await list.json();
+    const mutate=await fetch('/api/favorites',{method:'POST',
+      headers:{'Content-Type':'application/json'},body:JSON.stringify({id:'khuvsgul',favorite:true})});
+    const ai=await fetch('/api/ai/status');
+    const state=await ai.json();
+    return {authenticated:data.authenticated,ids:data.ids,mutationStatus:mutate.status,
+      aiAuthenticated:state.authenticated};
+  });
+  assert.equal(favorites.authenticated,false,'Guest favorites should not imply a logged-in account');
+  assert.equal(favorites.mutationStatus,401,'Guest must never write favorites');
+  assert.equal(favorites.aiAuthenticated,false,'Guest must not receive private AI quota data');
+  await page.goto(origin+'/design-review-v4/journal',{waitUntil:'load'});
+  assert.ok(await page.locator('.v3-scrapbook-chapter').count()>=1,'Real journal entries should render');
+  await page.goto(origin+'/design-review-v4/budget',{waitUntil:'load'});
+  assert.ok(await page.locator('.v3-donut').count()===1,'Budget distribution must render from actual sample expenses');
   assert.deepEqual(errors,[],'JavaScript runtime errors in public flows');
   console.log('Wanderly V4 browser: 6 responsive sizes, routes, map click, AI first message, custom trip editor OK');
  }finally{await browser.close();}
