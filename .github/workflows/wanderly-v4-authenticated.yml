@@ -1,0 +1,30 @@
+name: Wanderly V4 Authenticated Integration
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    environment: wanderly-e2e
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.5'
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.4'
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - name: Real authenticated E2E — isolated QA accounts
+        env:
+          WANDERLY_TEST_URL: ${{ secrets.WANDERLY_TEST_URL }}
+          WANDERLY_TEST_EMAIL: ${{ secrets.WANDERLY_TEST_EMAIL }}
+          WANDERLY_TEST_PASSWORD: ${{ secrets.WANDERLY_TEST_PASSWORD }}
+          WANDERLY_SECOND_TEST_EMAIL: ${{ secrets.WANDERLY_SECOND_TEST_EMAIL }}
+          WANDERLY_SECOND_TEST_PASSWORD: ${{ secrets.WANDERLY_SECOND_TEST_PASSWORD }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          WANDERLY_AI_LIVE_TEST: ${{ vars.WANDERLY_AI_LIVE_TEST }}
+        run: node scripts/check-v4-authenticated.cjs
