@@ -18,8 +18,18 @@ export function AIChat({demo=false}:{demo?:boolean}){
  ]:[]);
  const [input,setInput]=useState('');
  const [loading,setLoading]=useState(false);
+ const [aiStatus,setAiStatus]=useState<{configured:boolean;remaining:number}|null>(null);
  const [error,setError]=useState('');
  const end=useRef<HTMLDivElement>(null);
+ useEffect(()=>{
+  if(demo)return;
+  const controller=new AbortController();
+  fetch('/api/ai/status',{signal:controller.signal})
+   .then(async res=>res.ok?res.json():null)
+   .then(data=>{if(data?.authenticated)setAiStatus({configured:Boolean(data.configured),remaining:data.remaining??0});})
+   .catch(()=>{});
+  return ()=>controller.abort();
+ },[demo]);
  const started=useRef(false);
  useEffect(()=>{
   if(!started.current){started.current=true;return;}
@@ -39,6 +49,7 @@ export function AIChat({demo=false}:{demo?:boolean}){
    const json=await res.json() as {answer?:string;error?:string};
    if(!res.ok||!json.answer)throw new Error(json.error||'AI хариу ирсэнгүй.');
    setMessages(prev=>[...prev,{role:'assistant',content:json.answer||''}]);
+   setAiStatus(prev=>prev?({...prev,remaining:Math.max(0,prev.remaining-1)}):prev);
   }catch(e){setError(e instanceof Error?e.message:'AI холбогдоход алдаа гарлаа.');}
   finally{setLoading(false)}
  }
@@ -49,6 +60,12 @@ export function AIChat({demo=false}:{demo?:boolean}){
     <p>Танд тохирсон маршрутын санааг ярилцаж бүтээе.</p></div>
    <span className='v4-chat-live'>AI Gateway</span>
   </div>
+  {aiStatus && !demo && <p className={'v4-chat-service-state'+(!aiStatus.configured?' unavailable':'')}>
+    {aiStatus.configured
+      ? 'AI үйлчилгээ тохируулагдсан · 24 цагт үлдсэн '+aiStatus.remaining+' хүсэлт'
+      : 'AI үйлчилгээний холболт одоогоор тохируулагдаагүй. Дүрэмт төлөвлөгчийг ашиглаж болно.'}
+    <small>Энэ бол тохиргооны төлөв; бодит модель хариулах эсэх нь хүсэлт илгээхэд шалгагдана.</small>
+   </p>}
   <div className='v4-chat-history' aria-live='polite' aria-busy={loading}>
    {messages.length===0&&<div className='v4-chat-welcome'>
     <IconRobot size={37} stroke={1.5}/>
@@ -73,9 +90,9 @@ export function AIChat({demo=false}:{demo?:boolean}){
    <Link href='/trips/suggest'><IconRoute size={17}/> Төлөвлөгч</Link>
   </div>
   <form className='v4-chat-composer' onSubmit={e=>{e.preventDefault();void ask(input)}}>
-   <input aria-label='AI туслахаас асуух' value={input} disabled={loading||demo} maxLength={1200}
+   <input aria-label='AI туслахаас асуух' value={input} disabled={loading||demo||aiStatus?.configured===false} maxLength={1200}
     onChange={e=>setInput(e.target.value)} placeholder='Аяллын тухай юу ч асуугаарай…'/>
-   <button type='submit' disabled={loading||input.trim().length<3||demo} aria-label='Илгээх'><IconSend size={21}/></button>
+   <button type='submit' disabled={loading||input.trim().length<3||demo||aiStatus?.configured===false} aria-label='Илгээх'><IconSend size={21}/></button>
   </form>
   <p className='v4-chat-disclaimer'>AI-ийн мэдээлэл нь баталгаатай зам, үнэ, захиалга, цаг агаарын эх сурвалж биш. Нэвтэрсэн хэрэглэгч 24 цагт 5 хүсэлт илгээнэ.</p>
  </section>;

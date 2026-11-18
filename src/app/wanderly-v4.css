@@ -611,3 +611,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
  .v3-journal-page .v3-scrapbook{padding:15px 12px;border-radius:15px}
  .v3-journal-page .v3-scrapbook-chapter>header h2{font-size:1.25rem}
 }
+
+/* AI readiness is transparent: config detection never claims live inference success. */
+.v4-chat-service-state{margin:11px 25px 0;padding:8px 13px;border-radius:11px;background:#d4fa591a;border:1px solid #d4fa5952;color:#e6f7d4;font-size:.75rem;line-height:1.5;font-weight:800}
+.v4-chat-service-state.unavailable{background:#ffbe7a18;border-color:#efbd7b80;color:#ffe2b9}
+.v4-chat-service-state small{display:block;font-size:.62rem;font-weight:550;color:#c3d9d4;margin-top:3px}
