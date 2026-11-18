@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Brand } from '@/features/wanderly/visuals';
 import { Navigation } from '@/features/wanderly/navigation';
 import { AuthNav } from '@/features/wanderly/auth-nav';
+import { MobileBottomNav } from '@/features/wanderly/mobile-bottom-nav';
 import '@fontsource-variable/lora';
 import '@fontsource-variable/manrope';
 import './wanderly.css';
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Suspense>
         <RevealObserver />
         <main id='main'>{children}</main>
+        <MobileBottomNav />
         <footer className='site-footer'>
           <div className='container footer-inner'>
             <Brand />
