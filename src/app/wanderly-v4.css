@@ -411,3 +411,16 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
  .v4-chat-disclaimer{font-size:.59rem}
 }
 @media(prefers-reduced-motion:reduce){.v4-ai-guide-cards>a:hover{transform:none}}
+
+/* Visual QA polish: legible night map and mobile AI chat as primary content. */
+.v4-map-dark .leaflet-tile-pane{filter:invert(.8) hue-rotate(185deg) brightness(1.28) contrast(.92) saturate(.76)}
+.v4-map-dark::after{background:linear-gradient(90deg,#071d2c11,transparent 70%);pointer-events:none}
+.v4-chat-live{color:#c1d9d2}
+@media(max-width:680px){
+ .v4-ai-page{display:block;margin:10px auto 85px}
+ .v4-ai-guide{display:none}
+ .v4-ai-page .v4-chat-card{min-height:calc(100svh - 170px);max-height:calc(100svh - 160px)}
+ .v4-ai-page .v4-chat-history{min-height:0}
+ .v4-ai-page .v4-chat-composer{flex-shrink:0}
+ .v4-ai-page .v4-chat-disclaimer{flex-shrink:0}
+}

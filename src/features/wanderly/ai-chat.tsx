@@ -43,7 +43,7 @@ export function AIChat({demo=false}:{demo?:boolean}){
    <div className='v4-chat-head-icon'><IconSparkles size={23}/></div>
    <div><p className='v4-overline'>WANDERLY AI</p><h2>AI Аяллын туслах</h2>
     <p>Танд тохирсон маршрутын санааг ярилцаж бүтээе.</p></div>
-   <span className='v4-chat-live'><span/> AI Gateway</span>
+   <span className='v4-chat-live'>AI Gateway</span>
   </div>
   <div className='v4-chat-history' aria-live='polite' aria-busy={loading}>
    {messages.length===0&&<div className='v4-chat-welcome'>
