@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useTransition, useCallback, useMemo, useState } from 'react';
 import { dateLabel, money } from './catalog';
-import { resolveStop, haversineKm } from './places';
+import { resolveStop } from './places';
 import { save } from './actions';
 import { ActionForm, StopForm } from './forms';
 import type { Stop } from './model';
