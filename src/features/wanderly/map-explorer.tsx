@@ -13,6 +13,7 @@ const GeoMap=dynamic(()=>import('./explorer-tile-map'),{ssr:false,loading:()=>(
 type SearchPlace=MapLocation&{id:string;source:string};
 export function MapExplorer({trips}:{trips:Trip[]}){
  const [active,setActive]=useState<MapLocation|null>(null);
+ const [dark,setDark]=useState(true);
  const [query,setQuery]=useState('');
  const [searching,setSearching]=useState(false);
  const [found,setFound]=useState<SearchPlace[]>([]);
@@ -38,8 +39,9 @@ export function MapExplorer({trips}:{trips:Trip[]}){
   finally{setSearching(false);}
  }
  return <div className='v4-map-browser'>
-  <section className='v4-map-canvas'>
+  <section className={'v4-map-canvas'+(dark?' v4-map-dark':'')}>
    <GeoMap active={active} onPick={location=>{setActive(location);setFound([]);setMessage('Байршил сонгогдлоо. Газрын нэрийг хүссэнээрээ өөрчилж болно.');}}/>
+   <button type='button' className='v4-map-mode' onClick={()=>setDark(!dark)} aria-pressed={dark} aria-label='Газрын зургийн өнгө солих'>{dark?'☀ Цайвар зураг':'☾ Шөнийн зураг'}</button>
    <div className='v4-map-floating-title'><span>✦ WANDERLY / LIVE MAP</span><strong>Монгол орноо нээгээрэй.</strong></div>
    <div className='v4-map-searchbar'>
     <input value={query} type='search' aria-label='Дурын байршлын нэрээр хайх'

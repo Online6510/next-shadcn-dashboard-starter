@@ -317,3 +317,12 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
  .v4-map-inspector{padding:26px 17px 105px;overflow:visible;box-shadow:0 -8px 25px #17334119;border-radius:22px 22px 0 0;margin-top:-12px;z-index:3}
  .v4-map-inspector h1{font-size:2.4rem}
 }
+
+/* Reference closer night-mode geography: actual map tiles remain interactive, reversible. */
+.v4-map-dark{background:#091f2d}
+.v4-map-dark .leaflet-tile-pane{filter:invert(.95) hue-rotate(180deg) brightness(.7) contrast(1.12) saturate(.9)}
+.v4-map-dark::after{content:'';pointer-events:none;position:absolute;z-index:450;inset:0;background:linear-gradient(90deg,#071d2c38,transparent 75%),linear-gradient(0deg,#08253922,transparent 48%)}
+.v4-map-mode{position:absolute;z-index:650;top:24px;right:22px;background:#ffffffed;border:1px solid #e6edee;box-shadow:0 7px 26px #091f2b33;padding:11px 15px;color:#132e37;font-size:.78rem;font-weight:850;border-radius:13px;white-space:nowrap}
+.v4-map-mode:hover{background:#d4fa59;border-color:#d4fa59}
+.v4-map-dark .leaflet-container{background:#0d2634}
+@media(max-width:680px){.v4-map-mode{top:18px;right:13px;padding:9px 11px;font-size:.7rem}}
