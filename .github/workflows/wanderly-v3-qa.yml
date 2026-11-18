@@ -43,8 +43,10 @@ jobs:
             if curl -fsS http://127.0.0.1:3100/ >/dev/null; then break; fi
             sleep 2
           done
-          node scripts/check-v2.cjs
-          node scripts/check-v3.cjs
+          echo 'Visual QA and screenshot capture'
+          timeout 180s node scripts/check-v3.cjs
+          echo 'V2 full interactive regression'
+          timeout 240s node scripts/check-v2.cjs
       - name: Upload visual QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
