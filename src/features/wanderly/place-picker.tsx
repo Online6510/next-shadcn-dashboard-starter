@@ -63,8 +63,8 @@ export function PlacePicker({stop,selection}: {stop?:Stop;selection?:string}) {
         onClick={()=>void lookup()}>{searching?'Хайж байна…':'Газар хайх'}</button>
     </div>
     {message && <p role='status' className='meta'>{message}</p>}
-    {results.length>0 && <div className='v4-place-results' role='list' aria-label='Байршлын хайлтын үр дүн'>
-      {results.map(place=><button type='button' key={place.id+place.lat} role='listitem' onClick={()=>choose(place)}>
+    {results.length>0 && <div className='v4-place-results' aria-label='Байршлын хайлтын үр дүн'>
+      {results.map(place=><button type='button' key={place.id+place.lat} onClick={()=>choose(place)}>
         <strong>{place.name}</strong><small>{place.address}</small>
       </button>)}
     </div>}
