@@ -522,3 +522,52 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
  .v4-explore .v4-category-chips button{white-space:nowrap;padding:9px 14px;font-size:.74rem;flex:0 0 auto}
  .v4-favorite{width:36px;height:36px;font-size:23px}
 }
+
+/* Premium finance: calm light card modules, strong semantic amounts, animated accent */
+.v3-trip-shell .budget-grid,.v4-budget-review .budget-grid{gap:19px}
+.v3-trip-shell .budget-section,.v4-budget-review .budget-section{background:transparent;border:0;padding:20px 0 25px}
+.v3-trip-shell .v3-budget-header,.v4-budget-review .v3-budget-header{padding:0 0 20px}
+.v3-trip-shell .v3-budget-header h2,.v4-budget-review .v3-budget-header h2{font-family:var(--sans);font-size:clamp(2rem,3.3vw,3.7rem);font-style:normal;letter-spacing:-.055em}
+.v3-trip-shell .v3-budget-header h2 em,.v4-budget-review .v3-budget-header h2 em{font-style:normal;color:#209b73}
+.v3-trip-shell .budget-summary,.v4-budget-review .budget-summary{background:linear-gradient(145deg,#fff 40%,#f2f8f4 100%);border:1px solid #dfeae5;border-radius:21px;padding:27px;box-shadow:0 14px 38px #1b38350b}
+.v3-trip-shell .budget-grid>.panel:not(.budget-summary),.v4-budget-review .budget-grid>.panel:not(.budget-summary){border:1px solid #dfebed;border-radius:21px;background:white;padding:25px;box-shadow:0 10px 27px #15303909}
+.v3-trip-shell .budget-summary .metrics,.v4-budget-review .budget-summary .metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.v3-trip-shell .budget-summary .metrics>div,.v4-budget-review .budget-summary .metrics>div{border-radius:14px;background:#fff;border:1px solid #e1e9e8;padding:16px}
+.v3-trip-shell .budget-summary .metrics dt,.v4-budget-review .budget-summary .metrics dt{font-size:.74rem;color:#667b81;font-weight:750}
+.v3-trip-shell .budget-summary .metrics dd,.v4-budget-review .budget-summary .metrics dd{font-size:clamp(1.2rem,1.7vw,1.7rem);font-weight:900;color:#153b36;letter-spacing:-.05em}
+.v3-trip-shell .v3-donut,.v4-budget-review .v3-donut{width:218px;height:218px;border:10px solid #fff;box-shadow:0 10px 34px #163f3716}
+.v3-trip-shell .v3-donut-core,.v4-budget-review .v3-donut-core{background:#fff;box-shadow:inset 0 0 0 2px #eef4f0}
+.v3-trip-shell .v3-donut-core strong,.v4-budget-review .v3-donut-core strong{color:#173a35;font-size:1.15rem}
+.v3-trip-shell .v3-budget-legend>div,.v4-budget-review .v3-budget-legend>div{padding:9px 12px;background:white;border-radius:11px;border:1px solid #e4eeea}
+.v3-trip-shell .v3-budget-comparison,.v4-budget-review .v3-budget-comparison{background:#113f34;border-radius:15px;padding:17px;color:white}
+.v3-trip-shell .v3-budget-comparison strong,.v4-budget-review .v3-budget-comparison strong{color:#d4fa59}
+.v3-trip-shell .chart-track>span,.v4-budget-review .chart-track>span{background:#309b7a;border-radius:100px}
+.v4-budget-review{width:min(100% - 64px,1340px);margin:50px auto 95px}
+.v4-budget-review>header h1{font-size:clamp(2.7rem,4.3vw,4.7rem);letter-spacing:-.07em}
+.v4-budget-review>header>p:not(.v4-overline){color:#7b898f;margin-top:12px}
+.v4-budget-review .budget-section{margin-top:25px}
+/* Editorial memories, real user data and private photo access unchanged */
+.v3-journal-page{background:#fafbfc}
+.v3-journal-page .journal-cover{min-height:240px;max-height:290px;border-radius:21px;box-shadow:0 13px 34px #13343a25}
+.v3-journal-page .journal-cover-inner{padding:29px 36px}
+.v3-journal-page .journal-cover h1{font-family:var(--sans);font-size:clamp(2rem,3.5vw,4rem);font-weight:900;letter-spacing:-.065em}
+.v3-journal-page .journal-bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+.v3-journal-page .journal-nav{display:flex;gap:9px;overflow-x:auto;padding-block:10px;scrollbar-width:thin}
+.v3-journal-page .journal-nav .chip{border-radius:99px;background:#edf7f2;border:1px solid #dcece2;color:#155b43;font-weight:850}
+.v3-journal-page .v3-scrapbook{background:linear-gradient(145deg,#fff,#f9faf6);border-radius:24px;border:1px solid #e2e8e3;box-shadow:0 16px 50px #0e303010}
+.v3-journal-page .v3-scrapbook-chapter{padding-top:15px;border-top:1px solid #e5edea}
+.v3-journal-page .v3-scrapbook-chapter>header h2{font-family:var(--sans);font-weight:900;letter-spacing:-.05em}
+.v3-journal-page .v3-memory-card{gap:clamp(17px,2.8vw,43px);align-items:center}
+.v3-journal-page .v3-polaroid{background:white;border:1px solid #edf0e9;border-radius:5px;box-shadow:0 17px 39px #142c2f2d;padding:13px 13px 24px;transform:rotate(-1.5deg)}
+.v3-journal-page .v3-memory-card:nth-child(3n+2) .v3-polaroid{transform:rotate(2deg)}
+.v3-journal-page .v3-story-note h2{font-size:clamp(1.6rem,2.4vw,2.6rem);letter-spacing:-.07em}
+.v3-journal-page .v3-story-note>p:not(.eyebrow){white-space:pre-line;line-height:1.95;font-size:1rem;color:#4a6360}
+.v4-journal-review-label{display:none}
+@media(max-width:760px){
+ .v4-budget-review{width:min(100% - 26px,100%);margin:25px auto 95px}
+ .v4-budget-review .budget-summary,.v4-budget-review .budget-grid>.panel:not(.budget-summary){padding:14px}
+ .v3-trip-shell .budget-summary .metrics>div,.v4-budget-review .budget-summary .metrics>div{padding:12px}
+ .v3-journal-page .journal-cover{min-height:190px}
+ .v3-journal-page .journal-cover-inner{padding:18px}
+ .v3-journal-page .v3-polaroid,.v3-journal-page .v3-memory-card:nth-child(3n+2) .v3-polaroid{transform:rotate(-.5deg)}
+}

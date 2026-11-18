@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const { chromium } = require('@playwright/test');
 
 const origin=process.env.WANDERLY_TEST_URL||'http://127.0.0.1:3100';
-const routes=['/','/explore','/map','/login','/design-review-v4/trip','/design-review-v4/ai'];
+const routes=['/','/explore','/map','/login','/design-review-v4/trip','/design-review-v4/ai','/design-review-v4/journal','/design-review-v4/budget'];
 
 async function main(){
  const browser=await chromium.launch({args:['--no-sandbox']});
