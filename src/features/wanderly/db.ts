@@ -1,73 +1,66 @@
 import 'server-only';
-import { mkdirSync } from 'node:fs';
-import { resolve } from 'node:path';
-import { DatabaseSync } from 'node:sqlite';
-import { sample } from './seed';
 import type { Trip } from './model';
+import { serverSupabase, supabaseConfigured } from '@/lib/wanderly/supabase';
+import { optionalUser, requireUser } from '@/lib/wanderly/auth';
 
-let database: DatabaseSync | undefined;
+type TripRow = { id: string; document: Trip; revision: number };
 
-function db() {
-  if (database) return database;
-  const path = resolve(/* turbopackIgnore: true */ process.env.WANDERLY_DATA_DIR || '.wanderly');
-  mkdirSync(path, { recursive: true });
-  const connection = new DatabaseSync(resolve(path, 'trips.sqlite'));
-  connection.exec(`
-    PRAGMA busy_timeout = 5000;
-    CREATE TABLE IF NOT EXISTS trips (id TEXT PRIMARY KEY, document TEXT NOT NULL);
-    CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY);
-    BEGIN IMMEDIATE;
-  `);
-  try {
-    if (connection.prepare("INSERT OR IGNORE INTO metadata VALUES ('demo-v1')").run().changes) {
-      connection
-        .prepare('INSERT OR IGNORE INTO trips VALUES (?, ?)')
-        .run(sample.id, JSON.stringify(sample));
-    }
-    connection.exec('COMMIT');
-  } catch (error) {
-    connection.exec('ROLLBACK');
-    connection.close();
-    throw error;
-  }
-  database = connection;
-  return connection;
+// Every query uses the signed-in user's JWT; Postgres RLS is the final access boundary.
+export async function getTrip(id: string): Promise<Trip | undefined> {
+  if (!supabaseConfigured()) return undefined;
+  const user = await optionalUser();
+  if (!user) return undefined;
+  const supabase = await serverSupabase();
+  const { data, error } = await supabase.from('wanderly_trips')
+    .select('document').eq('owner_id',user.id).eq('id',id).maybeSingle();
+  if (error) throw new Error('Аяллын мэдээллийг уншиж чадсангүй.');
+  return (data?.document as Trip | undefined) ?? undefined;
 }
 
-export function getTrip(id: string): Trip | undefined {
-  const row = db().prepare('SELECT document FROM trips WHERE id = ?').get(id);
-  return row ? JSON.parse(String(row.document)) : undefined;
+export async function getTrips(): Promise<Trip[]> {
+  if (!supabaseConfigured()) return [];
+  const user = await optionalUser();
+  if (!user) return [];
+  const supabase = await serverSupabase();
+  const { data, error } = await supabase.from('wanderly_trips')
+    .select('document').eq('owner_id',user.id).order('updated_at',{ascending:false});
+  if (error) throw new Error('Аяллын жагсаалтыг уншиж чадсангүй.');
+  return (data || []).map((row) => row.document as Trip);
 }
 
-export function getTrips(): Trip[] {
-  return db()
-    .prepare('SELECT document FROM trips ORDER BY rowid DESC')
-    .all()
-    .map((row) => JSON.parse(String(row.document)));
+export async function createTrip(trip: Trip) {
+  const user = await requireUser();
+  const supabase = await serverSupabase();
+  const { error } = await supabase.from('wanderly_trips').insert({
+    owner_id:user.id, id:trip.id, document:trip
+  });
+  if (error) throw new Error('Аялал хадгалагдсангүй. Дахин оролдоно уу.');
 }
 
-export function createTrip(trip: Trip) {
-  db().prepare('INSERT INTO trips VALUES (?, ?)').run(trip.id, JSON.stringify(trip));
+export async function deleteTrip(id: string) {
+  const user = await requireUser();
+  const supabase = await serverSupabase();
+  const { data, error } = await supabase.from('wanderly_trips')
+    .delete().eq('id',id).eq('owner_id',user.id).select('document').maybeSingle();
+  if (error) throw new Error('Аяллыг устгаж чадсангүй.');
+  const trip = data?.document as Trip | undefined;
+  return trip ? trip.entries.flatMap((entry) => entry.photos || []) : [];
 }
 
-export function deleteTrip(id: string) {
-  const row = db().prepare('DELETE FROM trips WHERE id = ? RETURNING document').get(id);
-  return row
-    ? (JSON.parse(String(row.document)) as Trip).entries.flatMap((entry) => entry.photos || [])
-    : [];
-}
-
-export function updateTrip(id: string, change: (trip: Trip) => void) {
-  const connection = db();
-  connection.exec('BEGIN IMMEDIATE');
-  try {
-    const trip = getTrip(id);
-    if (!trip) throw new Error('Аялал олдсонгүй.');
-    change(trip);
-    connection.prepare('UPDATE trips SET document = ? WHERE id = ?').run(JSON.stringify(trip), id);
-    connection.exec('COMMIT');
-  } catch (error) {
-    connection.exec('ROLLBACK');
-    throw error;
-  }
+export async function updateTrip(id: string, change: (trip: Trip) => void) {
+  const user = await requireUser();
+  const supabase = await serverSupabase();
+  const { data, error } = await supabase.from('wanderly_trips')
+    .select('id,document,revision').eq('id',id).eq('owner_id',user.id).single();
+  if (error || !data) throw new Error('Аялал олдсонгүй.');
+  const row = data as TripRow;
+  const trip = row.document;
+  change(trip);
+  // Compare-and-swap prevents silently overwriting another tab's changes.
+  const { data: updated, error: updateError } = await supabase.from('wanderly_trips')
+    .update({ document:trip, revision:row.revision+1, updated_at:new Date().toISOString() })
+    .eq('id',id).eq('owner_id',user.id).eq('revision',row.revision)
+    .select('id').maybeSingle();
+  if (updateError) throw new Error('Өөрчлөлтийг хадгалж чадсангүй.');
+  if (!updated) throw new Error('Аялал өөр таб дээр шинэчлэгдсэн байна. Хуудсаа сэргээгээд дахин оролдоно уу.');
 }
