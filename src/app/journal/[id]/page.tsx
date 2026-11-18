@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { listDays } from '@/features/wanderly/model';
 import { getTrip } from '@/features/wanderly/db';
+import { requireUser } from '@/lib/wanderly/auth';
 import { destinations, dateLabel } from '@/features/wanderly/catalog';
 import { ActionForm, EntryForm } from '@/features/wanderly/forms';
 import { StoryLayout } from '@/features/wanderly/story-layout';
@@ -12,7 +13,8 @@ export const dynamic = 'force-dynamic';
 
 export default async function Journal({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const trip = getTrip(id);
+  await requireUser();
+  const trip = await getTrip(id);
   if (!trip) notFound();
   const entries = trip.entries.toSorted((a, b) => a.date.localeCompare(b.date));
   const cover = destinations.find((place) => place.id === trip.cover);

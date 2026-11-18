@@ -1,49 +1,49 @@
 # Wanderly — Монгол орноор аялъя
 
-Wanderly бол Монголын газруудыг судалж, өдрөөр аяллаа төлөвлөж, зардал болон гэрэл зурагтай дурсамжаа хадгалах монгол хэлтэй веб апп. Демо нь бүртгэл, API түлхүүр, төлбөртэй үйлчилгээ шаардахгүй.
+Wanderly бол Монголын аяллыг төлөвлөх, зардал хянах, дурсамж/зураг хадгалах, AI-аар аяллын нэмэлт санал авах **Next.js 16** веб апп.
 
-## Ажиллуулах
+## Одоогийн production architecture (Supabase branch)
 
-Node.js 22.13 буюу түүнээс шинэ 22.x хувилбар болон Bun 1.4 ашиглана.
+- **Supabase Auth:** Имэйл/нууц үгийн бүртгэл, нэвтрэлт. Баталгаажуулах имэйл болон redirect URL нь Supabase dashboard-ийн Auth тохиргооноос хамаарна.
+- **Supabase PostgreSQL:** Аялал, даалгавар, зардал, дурсамжийг хэрэглэгч тус бүрт хадгалах JSONB document + revision.
+- **RLS:** Хэрэглэгч зөвхөн өөрийн аяллыг уншиж/үүсгэж/засаж/устгана. Service role key ашиглаагүй.
+- **Supabase Storage:** Хэрэглэгчийн ID-аар тусгаарлагдсан private `wanderly-journal` bucket, WebP upload, authenticated download route.
+- **Vercel AI Gateway:** `google/gemini-2.5-flash-lite` загварын сервер талаас өгдөг AI аяллын санал. 24 цагт 5 хүсэлт/хэрэглэгч; AI хариу бодит үнэ эсвэл замын баталгаатай мэдээлэл биш.
+- **V3 UI/UX:** Cinematic Home, Explore, Trip Workspace, Budget, scrapbook Journal, гурван өнгөний theme.
+
+## Local run
+
+Node.js 22.x, Bun 1.4+ хэрэгтэй.
 
 ```bash
 bun install --frozen-lockfile
+cp .env.example .env.local
+# Supabase dashboard-аас project URL болон publishable key-г .env.local-д оруул.
 bun run dev
 ```
 
-Хөтөч дээр `http://localhost:3000` хаягийг нээнэ. Нүүр хуудасны **Жишээ аялал үзэх** товч нь гурван өдөр, дөрвөн зогсоол, гурван зардал, гурван дурсамжтай Хөвсгөлийн аяллыг нээнэ.
-
-Wanderly SQLite хүснэгтүүдээ аяллын өгөгдөл шаардсан эхний хүсэлтээр үүсгэж, жишээ аяллыг нэг удаа нэмнэ. Тусдаа migration эсвэл seed команд шаардлагагүй. Анхдагч өгөгдлийн файл нь `.wanderly/trips.sqlite`. Өөр сан ашиглах бол `.env.example`-ийн `WANDERLY_DATA_DIR` тохиргоог харна уу.
+AI-ийг локал орчинд ашиглах бол `AI_GATEWAY_API_KEY`-г **зөвхөн** хувийн `.env.local` файлд нэм. Vercel deployment-д OIDC token автоматаар өгөгдөх боломжтой тул provider API key-г source code-д бүү хадгал.
 
 ```bash
 bun test
 bun run typecheck
 bun run lint
 bun run build
-bun run start
 ```
 
-## Хэрхэн ажилладаг вэ
+- [Production setup, Auth redirect, deployment checklist](docs/deployment.md)
+- [Supabase schema, RLS and private storage](docs/SUPABASE_SCHEMA.sql)
+- [V3 UI visual QA](docs/UI_FIDELITY_REPORT.md)
+- [V2 demo reference](docs/DEMO_SCRIPT_MN.md)
 
-Next.js App Router хуудас нь SQLite-ээс аяллыг сервер дээр уншина. React форм Server Action дуудаж, Zod шалгалтын дараа өгөгдлийг SQLite-д гүйлгээгээр хадгална. Газрын каталог кодод, зураг болон фонтын файлууд төсөлд байна. Газрын зураг нь офлайн бүдүүвч болон хэрэглэгчийн сонголтоор ачаалах Leaflet / OpenStreetMap горимтой.
-
-- [Хэрэгжүүлсэн боломжууд](docs/FEATURES.md)
-- [Архитектур](docs/ARCHITECTURE.md)
-- [Монгол хэл дээрх демо танилцуулга](docs/DEMO_SCRIPT_MN.md)
-- [Ажлын тэмдэглэл](docs/WORK_LOG.md)
-- [Зураг, газрын зургийн эх сурвалж](IMAGE_CREDITS.md)
-- [Десктоп, гар утасны дэлгэцийн зургууд](docs/screenshots)
-
-## Демо ашиглалт
-
-Энэ хувилбар нэг хэрэглэгчийн локал өгөгдлийн сантай. Серверт нэвтрэх боломжтой хүмүүс нэг өгөгдлийг хуваалцана. Дурсамжид холбоосоор зураг оруулахад хөтөч эх сурвалжаас нь татна. Нэг дурсамжид 6 хүртэл JPEG, PNG, WebP файл оруулж болно. Хөрвүүлсэн зургууд өгөгдлийн сангийн хажуу дахь uploads/ хавтаст хадгалагдана.
+**Анхаар:** V2-ийн `.wanderly/trips.sqlite` local файл нь шинэ Supabase төсөлд автоматаар импортлогдохгүй. Хуучин өгөгдлөө устгаж болохгүй.
 
 ## Эх загвар
 
 [Kiranism/next-shadcn-dashboard-starter](https://github.com/Kiranism/next-shadcn-dashboard-starter) төслийн Next.js, TypeScript, Bun, shadcn/ui суурийг ашигласан. Эх загварын MIT лиценз, зохиогчийн мэдэгдэл [LICENSE](LICENSE)-д бий.
 
 
-## V2 танилцуулга
+## Хуучин V2 хувилбарын түүхэн танилцуулга
 
 **Бэлэн.** 16 газрын каталог, аяллын төлвийн шүүлт, зогсоол чирж эрэмбэлэх, саналын дараалал өөрчлөх, бодит зардлыг ангилах, цомог болон он дарааллын харагдац, олон зураг оруулах, браузераар хэвлэх.
 

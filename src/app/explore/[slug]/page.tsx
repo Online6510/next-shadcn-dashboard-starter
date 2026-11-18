@@ -10,7 +10,7 @@ export default async function Destination({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const place = destinations.find((item) => item.id === slug);
   if (!place) notFound();
-  const trips = getTrips();
+  const trips = await getTrips();
   return (
     <section className='container section'>
       <Link href='/explore' className='text-link'>

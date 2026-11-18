@@ -1,9 +1,11 @@
 import Link from 'next/link';
+import { requireUser } from '@/lib/wanderly/auth';
 import { PlannerForm } from '@/features/wanderly/planner-form';
 
 export const metadata = { title: 'Ухаалаг санал' };
 
-export default function TravelSuggestion() {
+export default async function TravelSuggestion() {
+  await requireUser();
   return (
     <section className='container section v3-smart-planner'>
       <Link className='text-link' href='/trips'>
