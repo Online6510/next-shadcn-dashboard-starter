@@ -17,6 +17,7 @@ function SaveAIPlan({input,plan}:{input:PlannerInput;plan:AIPlan}) {
 
 export function AIPlanBuilder({input}:{input:PlannerInput}) {
   const [plan,setPlan]=useState<AIPlan|null>(null);
+  const [editMode,setEditMode]=useState(false);
   const [error,setError]=useState('');
   const [loading,setLoading]=useState(false);
   async function generate() {
@@ -32,6 +33,7 @@ export function AIPlanBuilder({input}:{input:PlannerInput}) {
       const parsed=aiPlanSchema.safeParse(result.plan);
       if(!parsed.success) throw new Error('AI саналын бүтэц буруу байна.');
       setPlan(parsed.data);
+      setEditMode(false);
     } catch(err) {
       setError(err instanceof Error?err.message:'AI санал авч чадсангүй.');
     } finally {setLoading(false);}
@@ -48,16 +50,58 @@ export function AIPlanBuilder({input}:{input:PlannerInput}) {
     {error && <p className='error-text' role='alert'>{error}</p>}
     {plan && <>
       <p className='v3-ai-overview'>{plan.overview}</p>
-      {plan.days.map((day)=>(
-        <div className='expense-record' key={day.dayIndex}>
+      <div className='v4-ai-review-heading'>
+        <strong>AI саналын засварлах төлөв</strong>
+        <button type='button' className='small-button' onClick={()=>setEditMode(!editMode)}
+         aria-expanded={editMode}>{editMode?'Дуусгах':'✎ Засварлах'}</button>
+      </div>
+      {plan.days.map((day,dayIndex)=>(
+        <div className='expense-record v4-ai-day-review' key={day.dayIndex}>
           <h4>{day.dayIndex}-р өдөр</h4>
-          <p>{day.placeIds.map((id)=>destinations.find((p)=>p.id===id)?.name||id).join(' → ')}</p>
-          <small>{day.note}</small>
+          {editMode ? <>
+            <div className='v4-ai-place-editor'>
+              {day.placeIds.map((id,placeIndex)=><div key={placeIndex}>
+                <label>Очих газар {placeIndex+1}
+                  <select value={id} onChange={event=>setPlan(prev=>prev?({
+                    ...prev,days:prev.days.map((d,i)=>i===dayIndex?({
+                      ...d,placeIds:d.placeIds.map((p,j)=>j===placeIndex?event.target.value:p)
+                    }):d)
+                  }):prev)}>
+                    {destinations.map(place=><option key={place.id} value={place.id}>{place.name} · {place.region}</option>)}
+                  </select>
+                </label>
+                <button type='button' className='small-button' aria-label={placeIndex+1+'-р газрыг хасах'}
+                 disabled={day.placeIds.length<=1} onClick={()=>setPlan(prev=>prev?({
+                  ...prev,days:prev.days.map((d,i)=>i===dayIndex?({
+                   ...d,placeIds:d.placeIds.filter((_,j)=>j!==placeIndex)
+                  }):d)
+                 }):prev)}>×</button>
+              </div>)}
+            </div>
+            <button type='button' className='small-button' disabled={day.placeIds.length>=3}
+              onClick={()=>setPlan(prev=>prev?({...prev,days:prev.days.map((d,i)=>
+               i===dayIndex?({...d,placeIds:[...d.placeIds,
+                 destinations.find(p=>!d.placeIds.includes(p.id))?.id||destinations[0].id]}):d)}):prev)}
+            >＋ Газар нэмэх</button>
+            <label>Өдрийн тэмдэглэл
+              <textarea rows={2} maxLength={350} value={day.note}
+               onChange={event=>setPlan(prev=>prev?({...prev,days:prev.days.map((d,i)=>
+                i===dayIndex?({...d,note:event.target.value}):d)}):prev)}/>
+            </label>
+          </> : <>
+            <p>{day.placeIds.map(id=>destinations.find(p=>p.id===id)?.name||id).join(' → ')}</p>
+            <small>{day.note}</small>
+          </>}
         </div>
       ))}
       {plan.tips.length>0 && <ul>{plan.tips.map((tip,i)=><li key={i}>{tip}</li>)}</ul>}
       <p className='meta'>AI-ийн санал баталгаатай маршрут, аяллын зардал, цаг агаарын мэдээлэл биш.</p>
-      <SaveAIPlan input={input} plan={plan}/>
+      {(() => {
+        const ids=plan.days.flatMap(day=>day.placeIds);
+        if(new Set(ids).size!==ids.length)return <p role='alert' className='error-text'>Нэг газрыг олон давхар сонгосон байна. Хадгалахаас өмнө засна уу.</p>;
+        return <SaveAIPlan key={JSON.stringify(plan)} input={input} plan={plan}/>;
+      })()}
+      <p className='meta'>Жагсаалтаас бусад дурын газар очих бол аяллаа хадгалсны дараа газрын зураг дээр өөрийн цэгээ нэмнэ үү.</p>
     </>}
   </section>;
 }

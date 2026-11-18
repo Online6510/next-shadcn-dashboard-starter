@@ -571,3 +571,14 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
  .v3-journal-page .journal-cover-inner{padding:18px}
  .v3-journal-page .v3-polaroid,.v3-journal-page .v3-memory-card:nth-child(3n+2) .v3-polaroid{transform:rotate(-.5deg)}
 }
+
+/* Real editable AI itinerary proposal, before private trip persistence */
+.v4-ai-review-heading{display:flex;align-items:center;gap:10px;justify-content:space-between;padding-block:8px}
+.v4-ai-review-heading>strong{font-size:.91rem}
+.v4-ai-day-review{display:grid;gap:10px}
+.v4-ai-place-editor{display:grid;gap:7px}
+.v4-ai-place-editor>div{display:flex;align-items:end;gap:8px}
+.v4-ai-place-editor label,.v4-ai-day-review>label{display:grid;gap:5px;flex:1;font-weight:800;font-size:.71rem}
+.v4-ai-place-editor select,.v4-ai-day-review textarea{width:100%;min-width:0;background:#fff;color:#153d32;border:1px solid #d6e2dc;border-radius:10px;padding:9px;font-size:.8rem}
+.v4-ai-place-editor .small-button{min-height:38px}
+.v4-ai-day-review>button{width:max-content;font-size:.74rem}
