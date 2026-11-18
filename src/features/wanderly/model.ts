@@ -17,7 +17,8 @@ export const tripFields = z
     end: z.iso.date(),
     travelers: integer(1, 100),
     budget: amount,
-    cover: destinationId
+    cover: z.union([destinationId,z.literal('custom')]),
+    coverLabel: z.string().trim().max(100).optional()
   })
   .refine(
     ({ start, end }) => listDays(start, end).length > 0,

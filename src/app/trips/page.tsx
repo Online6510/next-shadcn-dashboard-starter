@@ -56,7 +56,7 @@ export default async function Trips({
             return (
               <Link className='destination-card' key={trip.id} href={'/trips/' + trip.id}>
                 <div className='destination-photo'>
-                  <Cover image={cover?.image || ''} label={trip.title} />
+                  <Cover image={cover?.image || 'hero'} label={trip.title} />
                   <span className='photo-tag'>{status}</span>
                 </div>
                 <div className='destination-copy'>
@@ -69,7 +69,7 @@ export default async function Trips({
                   </div>
                   <p>
                     {trip.id === 'khuvsgul-demo' ? 'Жишээ аялал · ' : ''}
-                    {trip.stops.length} зогсоол · {trip.travelers} аялагч · {money(trip.budget)}
+                    {trip.cover === 'custom' ? (trip.coverLabel ? trip.coverLabel + ' · ' : '') : ''}{trip.stops.length} зогсоол · {trip.travelers} аялагч · {money(trip.budget)}
                   </p>
                 </div>
               </Link>

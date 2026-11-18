@@ -23,7 +23,7 @@ export default async function NewTrip({
         <div>
           <p className='eyebrow'>ТӨЛӨВЛӨГӨӨ</p>
           <h1>Шинэ аялал</h1>
-          <p className='intro'>Хаашаа, хэзээ, хэнтэй явахаа сонгоод аяллаа эхлүүлээрэй.</p>
+          <p className='intro'>Аяллын нэр, хугацаа, төсвөө оруулаад эхлээрэй. Очих газраа заавал бэлэн жагсаалтаас сонгох шаардлагагүй — газрын зураг дээр хүссэн цэгээ нэмнэ.</p>
           <div className='new-trip-photo'>
             <Cover image={place?.image || 'hero'} label={place?.name || 'Хөвсгөлийн байгаль'} />
           </div>

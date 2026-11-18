@@ -39,10 +39,10 @@ export function TripLayout({trip,query}:{
         ← Миний аялал
       </Link>
       <div className='trip-cover v3-trip-cover'>
-        <Cover image={cover?.image || ''} label={trip.title} />
+        <Cover image={cover?.image || 'hero'} label={trip.title} />
         <div className='trip-cover-copy'>
           <p className='eyebrow'>
-            {cover?.region} · {days.length} ӨДӨР
+            {trip.cover === 'custom' ? (trip.coverLabel || 'МИНИЙ АЯЛАЛ') : cover?.region} · {days.length} ӨДӨР
           </p>
           <h1>{trip.title}</h1>
           <p>
