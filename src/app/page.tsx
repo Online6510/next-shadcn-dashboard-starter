@@ -44,7 +44,7 @@ export default function Home() {
           <span>⌖ &nbsp; ХӨВСГӨЛИЙН НУУРААС СЭДЭВЛЭВ</span>
         </div>
       </section>
-      <section className='container section v3-after-hero' id='featured'>
+      <section className='container section v3-after-hero' data-v3-reveal id='featured'>
         <div className='v3-editorial-intro'><span>WANDERLY / DISCOVER</span><p>Газрын зургийн цэг бүрээс шинэ түүх эхэлнэ.</p></div>
         <div className='section-heading'>
           <div>
@@ -61,7 +61,7 @@ export default function Home() {
           ))}
         </div>
       </section>
-      <section className='paper section'>
+      <section className='paper section' data-v3-reveal>
         <div className='container'>
           <p className='eyebrow'>АЯЛЛЫН ТЭМДЭГЛЭЛ</p>
           <h2>Замын турш, дурсамж бүр</h2>
@@ -80,7 +80,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className='container section v3-story-section'>
+      <section className='container section v3-story-section' data-v3-reveal>
         <div className='story-banner'>
           <div className='story-image'>
             <Cover image='lake' label='Нуурын эрэг' />

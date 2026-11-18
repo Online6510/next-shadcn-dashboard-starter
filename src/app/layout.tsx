@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { SaveNotice } from '@/features/wanderly/save-notice';
+import { RevealObserver } from '@/features/wanderly/reveal-observer';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Brand } from '@/features/wanderly/visuals';
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Suspense fallback={null}>
           <SaveNotice />
         </Suspense>
+        <RevealObserver />
         <main id='main'>{children}</main>
         <footer className='site-footer'>
           <div className='container footer-inner'>
