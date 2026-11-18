@@ -58,6 +58,10 @@ async function run() {
           () => document.documentElement.scrollWidth > window.innerWidth + 2
         );
         assert.equal(overflow, false, 'Horizontal overflow: ' + route + ' ' + width);
+        if (name === 'budget') {
+          await page.locator('#budget').evaluate((element) => element.scrollIntoView({ block: 'start', behavior: 'instant' }));
+          await page.waitForTimeout(200);
+        }
         await page.screenshot({
           path: path.join(output, name + '-' + device + '.png'),
           fullPage: false

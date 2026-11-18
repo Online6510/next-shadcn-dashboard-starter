@@ -37,7 +37,7 @@ export default function Home() {
           <div><strong>{destinations.length}</strong><span>Аяллын газрын санаа</span></div>
           <div><strong>{tripCount}</strong><span>Хадгалсан аялал</span></div>
           <div><strong>01 — 30</strong><span>Өдрөөр аяллаа төлөвлө</span></div>
-          <div><strong>∞</strong><span>Дурсамжаа хадгал</span></div>
+          <div><strong>06</strong><span>Зураг нэг дурсамжид</span></div>
         </div>
         <div className='container hero-caption'>
           <a href='#featured'>↓ &nbsp; ОНЦЛОХ ГАЗРУУД</a>

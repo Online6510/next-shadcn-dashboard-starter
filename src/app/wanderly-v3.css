@@ -333,3 +333,26 @@ label,summary,.text-link{color:var(--v3-primary)}
  .v3-settings-layout{margin:28px 0}
 }
 @media(prefers-reduced-motion:reduce){.v3-reveal-pending{opacity:1;transform:none;transition:none}.v3-theme-card:hover{transform:none}}
+
+/* Final visual QA refinement, based on 1440x900 / 390x844 screenshots. */
+.v3-journal-page>.container.section{padding-top:34px}
+.v3-journal-title-line{margin:8px 0 13px;padding-top:12px}
+.v3-journal-page .journal-cover{min-height:195px;max-height:245px}
+.v3-journal-page .journal-cover-inner{padding:23px 34px}
+.v3-journal-page .journal-cover h1{font-size:clamp(2.25rem,3.3vw,3.6rem)}
+.v3-journal-page .journal-cover .intro{margin-block:12px}
+.v3-journal-page .journal-bar{margin:14px auto 12px}
+.v3-journal-page .story-switch{margin-bottom:9px}
+.v3-journal-page .journal-nav{margin-bottom:12px}
+.v3-appearance h1{font-size:clamp(2.7rem,4.7vw,4.6rem);max-width:1080px;line-height:1.08}
+.v3-appearance .v3-settings-layout{margin-top:30px}
+@media(max-width:620px){
+ .v3-journal-page>.container.section{padding-top:22px}
+ .v3-journal-title-line{font-size:.59rem;letter-spacing:.08em}
+ .v3-journal-title-line span:last-child{display:block;margin-top:7px}
+ .v3-journal-page .journal-cover{min-height:225px;max-height:none}
+ .v3-journal-page .journal-cover-inner{padding:24px}
+ .v3-journal-page .journal-cover h1{font-size:clamp(1.85rem,8.4vw,2.8rem)}
+ .v3-journal-page .journal-bar{margin-block:13px}
+ .v3-appearance h1{font-size:clamp(2.35rem,9.1vw,3.35rem)}
+}

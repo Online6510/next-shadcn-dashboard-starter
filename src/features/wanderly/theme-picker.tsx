@@ -45,11 +45,17 @@ function getSelectedTheme(): ThemeId {
 }
 
 function subscribeTheme(callback: () => void) {
+  const onStorage = (event: StorageEvent) => {
+    if (event.key !== 'wanderly-theme') return;
+    const next = isTheme(event.newValue) ? event.newValue : 'nature';
+    document.documentElement.setAttribute('data-theme', next);
+    callback();
+  };
   window.addEventListener('wanderly-theme-change', callback);
-  window.addEventListener('storage', callback);
+  window.addEventListener('storage', onStorage);
   return () => {
     window.removeEventListener('wanderly-theme-change', callback);
-    window.removeEventListener('storage', callback);
+    window.removeEventListener('storage', onStorage);
   };
 }
 
