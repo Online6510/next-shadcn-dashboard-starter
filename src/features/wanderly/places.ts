@@ -31,3 +31,15 @@ export function haversineKm(a:Pick<GeoPlace,'lat'|'lon'>,b:Pick<GeoPlace,'lat'|'
   const x=Math.sin(dLat/2)**2 + Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLon/2)**2;
   return 6371*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
 }
+
+
+/** Parse a direct latitude/longitude pair without depending on an external geocoder. */
+export function parseCoordinates(input:string):{lat:number;lon:number}|null {
+  const parts=input.trim().split(/\s*[,;]\s*|\s+/).filter(Boolean);
+  if(parts.length!==2)return null;
+  if(!parts.every(part=>/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(part)))return null;
+  const [lat,lon]=parts.map(Number);
+  if(!Number.isFinite(lat)||!Number.isFinite(lon)||Math.abs(lat)>90||Math.abs(lon)>180)
+    return null;
+  return {lat,lon};
+}

@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import {destinations} from './catalog';
 import {ActionForm} from './forms';
+import {parseCoordinates} from './places';
 import {listDays} from './model';
 import type {Trip} from './model';
 import type {MapLocation} from './explorer-tile-map';
@@ -28,7 +29,13 @@ export function MapExplorer({trips}:{trips:Trip[]}){
  const days=current?listDays(current.start,current.end):[];
  const selectedDay=days.includes(day)?day:days[0]||'';
  async function search(){
-  if(query.trim().length<2){setMessage('Газрын нэрийг 2-оос дээш тэмдэгтээр бичнэ үү.');return;}
+  const coordinates=parseCoordinates(query);
+  if(coordinates){
+    setActive({...coordinates,name:'Миний сонгосон координат',address:'Гараар оруулсан газарзүйн координат'});
+    setFound([]);setMessage('Координатыг газрын зураг дээр сонголоо. Байршлын нэрийг хүссэнээрээ өөрчилнө үү.');
+    return;
+  }
+  if(query.trim().length<2){setMessage('Газрын нэр эсвэл “47.918, 106.917” форматтай координат бичнэ үү.');return;}
   setSearching(true);setFound([]);setMessage('');
   try{
    const res=await fetch('/api/geo/search?q='+encodeURIComponent(query.trim()));
@@ -46,7 +53,7 @@ export function MapExplorer({trips}:{trips:Trip[]}){
    <div className='v4-map-searchbar'>
     <input value={query} type='search' aria-label='Дурын байршлын нэрээр хайх'
       onChange={e=>setQuery(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();void search()}}}
-      placeholder='Газар, хот, нуур, уул, хаяг хайх…'/>
+      placeholder='Газрын нэр эсвэл 47.918, 106.917…'/>
     <button type='button' onClick={()=>void search()} disabled={searching}>{searching?'…':'⌕'}</button>
     {found.length>0&&<div className='v4-map-results'>
      {found.map(place=><button type='button' key={place.id+place.lat} onClick={()=>{setActive(place);setFound([]);}}>

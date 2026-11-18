@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { stopFields } from './model';
-import { resolveStop, haversineKm } from './places';
+import { resolveStop, haversineKm, parseCoordinates } from './places';
 
 const original={
   destination:'custom',customName:'Миний дуртай буудал',customAddress:'Дархан',
@@ -32,4 +32,13 @@ test('existing curated destination stops are backwards compatible',()=>{
 test('straight line geodesic distance is approximate, never road navigation',()=>{
   assert.equal(Math.round(haversineKm({lat:47.92,lon:106.92},{lat:47.92,lon:106.92})),0);
   assert(haversineKm({lat:47.92,lon:106.92},{lat:50.44,lon:100.16})>500);
+});
+
+test('coordinate search supports signed global coordinates without API key',()=>{
+ assert.deepEqual(parseCoordinates('47.918, 106.917'),{lat:47.918,lon:106.917});
+ assert.deepEqual(parseCoordinates(' -22.5 ; -66.77 '),{lat:-22.5,lon:-66.77});
+ assert.deepEqual(parseCoordinates('0 0'),{lat:0,lon:0});
+ for(const input of ['92, 10','40, 192','NaN, 20','40.3','http://example.com','21, 22, 23']){
+  assert.equal(parseCoordinates(input),null,input);
+ }
 });

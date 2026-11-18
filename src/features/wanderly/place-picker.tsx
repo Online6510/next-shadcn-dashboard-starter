@@ -3,6 +3,7 @@
 import { useId, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { destinations } from './catalog';
+import { parseCoordinates } from './places';
 import type { Stop } from './model';
 
 const SelectMap = dynamic(()=>import('./place-select-map'),{
@@ -31,6 +32,14 @@ export function PlacePicker({stop,selection}: {stop?:Stop;selection?:string}) {
   }
   async function lookup() {
     const q=search.trim();
+    const coordinates=parseCoordinates(q);
+    if(coordinates){
+      choose({id:'manual-coordinates',name:'Миний сонгосон координат',
+        address:'Гараар оруулсан газарзүйн координат',
+        ...coordinates,source:'manual'});
+      setMessage('Координатыг сонголоо. Газрын нэрийг хүссэнээрээ өөрчилж болно.');
+      return;
+    }
     if(q.length<2) {setMessage('Хайх газрын нэрийг 2-оос дээш тэмдэгтээр бичнэ үү.');return;}
     setSearching(true);setMessage('');setResults([]);
     try {
@@ -56,7 +65,7 @@ export function PlacePicker({stop,selection}: {stop?:Stop;selection?:string}) {
     </select>
     <div className='v4-picker-search'>
       <input aria-label='Байршлын нэрээр хайх' value={search}
-        placeholder='Улаанбаатар, Байкал, Дархан эсвэл дурын нэр…'
+        placeholder='Газрын нэр эсвэл 47.918, 106.917…'
         onChange={e=>setSearch(e.target.value)}
         onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();void lookup();}}}/>
       <button type='button' className='small-button' disabled={searching}
