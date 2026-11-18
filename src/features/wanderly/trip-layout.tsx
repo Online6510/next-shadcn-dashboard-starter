@@ -101,3 +101,5 @@ export function TripLayout({trip,query}:{
     </section>
   );
 
+
+}
