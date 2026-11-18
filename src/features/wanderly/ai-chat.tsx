@@ -20,7 +20,11 @@ export function AIChat({demo=false}:{demo?:boolean}){
  const [loading,setLoading]=useState(false);
  const [error,setError]=useState('');
  const end=useRef<HTMLDivElement>(null);
- useEffect(()=>{end.current?.scrollIntoView({behavior:'smooth',block:'nearest'})},[messages.length,loading]);
+ const started=useRef(false);
+ useEffect(()=>{
+  if(!started.current){started.current=true;return;}
+  end.current?.scrollIntoView({behavior:'smooth',block:'nearest'});
+ },[messages.length,loading]);
  async function ask(question:string){
   const text=question.trim();
   if(text.length<3||loading||demo)return;
