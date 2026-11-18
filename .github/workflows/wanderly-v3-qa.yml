@@ -39,6 +39,8 @@ jobs:
         run: |
           mkdir -p /tmp/wanderly-v3-qa
           WANDERLY_DATA_DIR=/tmp/wanderly-v3-qa bun run start --hostname 127.0.0.1 --port 3100 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           for attempt in $(seq 1 40); do
             if curl -fsS http://127.0.0.1:3100/ >/dev/null; then break; fi
             sleep 2
