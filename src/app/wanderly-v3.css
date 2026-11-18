@@ -382,3 +382,5 @@ label,summary,.text-link{color:var(--v3-primary)}
 .v3-ai-panel .expense-record small{line-height:1.55;display:block}
 .v3-ai-panel ul{padding-left:19px;list-style:disc}
 .v3-ai-panel li{line-height:1.6;margin-bottom:7px}
+
+body:has(.v3-hero) .v3-auth-link{color:#fff8ed;border-color:#fff8ed80;background:#123b305c}

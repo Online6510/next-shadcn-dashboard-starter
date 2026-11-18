@@ -1,30 +1,46 @@
-# Deployment
+# Wanderly — Vercel + Supabase production guide
 
-Wanderly V2 runs as a single-user Node.js application with a writable persistent volume. Use Node 22.13+ and run the production build and server from the README. For a private demonstration bind the server to the loopback interface. Set `WANDERLY_DATA_DIR` to a directory writable by the application user and back up the whole directory, including uploads.
+## Current resources
 
-Ephemeral Vercel function storage cannot retain this SQLite database and its uploaded photos across instances. A public multi-user deployment requires authentication, tenant-scoped reads and writes, a durable database and private object storage. See [architecture and restore procedure](ARCHITECTURE.md).
+- Supabase project: `wanderly-mongolia` (ap-northeast-2)
+- Vercel project: `wanderly-mongolia`
+- Git branch: `feat/wanderly-supabase-production`
+- Avoid deploying the old `main` branch (that branch still contains V1 SQLite code).
 
-## Docker
+## Supabase
 
-The repository includes two Dockerfiles: `Dockerfile` (Node.js) and `Dockerfile.bun` (Bun). Pass `NEXT_PUBLIC_*` variables as `--build-arg` at build time and runtime secrets via `-e` at run time.
+Create only the tables/policies in [SUPABASE_SCHEMA.sql](SUPABASE_SCHEMA.sql) if provisioning a **fresh** project. The linked Supabase project already has the schema applied. Security Advisor reported zero security lints after setup.
 
-Build the image:
+The `wanderly_trips` and `wanderly_ai_usage` tables use Row Level Security based on `auth.uid()`. The journal bucket is **private** and restricts paths to the current user's ID. The Next.js media route always authenticates and downloads under that prefix. No service role or secret Supabase key is required in app code.
 
-```bash
-# Node.js
-docker build \
-  -t wanderly .
+### Required Auth dashboard step
 
-# OR Bun
-docker build -f Dockerfile.bun \
-  -t wanderly .
-```
+In **Supabase Dashboard → Authentication → URL Configuration**, set:
+- Site URL to the final app origin.
+- Allow redirect URLs for `https://YOUR_DEPLOYMENT_ORIGIN/auth/callback` and your real production URL. Set `http://localhost:3000/auth/callback` only for local development, if used.
 
-Run the container:
+Configure email confirmation delivery/template and test a real registration, inbox confirmation, login, sign-out, and second-user isolation. The connector here does not expose the Auth URL configuration operation, so this setting is not automatically modified by the code deployment.
 
-```bash
-docker run -d -p 127.0.0.1:3000:3000 -v wanderly-data:/app/.wanderly \
-  --restart unless-stopped \
-  --name wanderly \
-  wanderly
-```
+## Vercel environment variables
+
+- `NEXT_PUBLIC_SUPABASE_URL` — Supabase project HTTPS URL (public).
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` — publishable project key; never use a secret/service-role key in NEXT_PUBLIC.
+- `NEXT_PUBLIC_SITE_URL` — public origin, used for Supabase confirmation callback. Set to the exact deployed origin and redeploy.
+- `AI_GATEWAY_MODEL` — verified AI Gateway model ID (default `google/gemini-2.5-flash-lite`).
+- `AI_GATEWAY_API_KEY` — only for local/non-Vercel runtimes if needed; keep encrypted. Vercel can use `VERCEL_OIDC_TOKEN` for AI Gateway automatically.
+
+Connect Supabase, run the build, create a **Preview** deployment from the Supabase branch, and test sign-up plus full app functionality before promoting to production. Preview deployments may be Vercel Authentication protected.
+
+## AI model costs and safety
+
+AI model usage may be billable depending on the team's Gateway credits and settings. The app enforces a basic 5-per-24-hour quota per signed-in user via `wanderly_ai_usage`. For public use set an AI Gateway/team-level spend cap and monitor usage; app-side quotas alone are not a billing guarantee.
+
+AI suggestions are restricted to the curated destinations catalog. Users can review and save a suggestion; road route metrics, live prices, reservations, and weather are **not verified** by the LLM.
+
+## Legacy data
+
+V2 SQLite plus `.wanderly/uploads` were kept untouched in the old branch. They are not automatically imported: do not delete these files before explicit data migration.
+
+## Deployment validation
+
+GitHub CI verifies tests, typecheck, lint, build. Preview HTTP smoke tests verify Home, Explore, Login and unauthenticated `/trips → /login`. A full authenticated end-to-end test and AI inference test must pass before declaring this production-ready. A passing production build alone is not sufficient.

@@ -4,9 +4,13 @@ import { serverSupabase, supabaseConfigured } from './supabase';
 
 export async function optionalUser() {
   if (!supabaseConfigured()) return null;
-  const supabase = await serverSupabase();
-  const { data: { user }, error } = await supabase.auth.getUser();
-  return error ? null : user;
+  try {
+    const supabase = await serverSupabase();
+    const { data: { user }, error } = await supabase.auth.getUser();
+    return error ? null : user;
+  } catch {
+    return null;
+  }
 }
 
 export async function requireUser() {

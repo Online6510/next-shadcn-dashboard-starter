@@ -18,8 +18,14 @@ export async function POST(request: Request) {
   const length=Number(request.headers.get('content-length') || 0);
   if(length > 12000) return NextResponse.json({error:'Хүсэлтийн хэмжээ хэтэрсэн.'},{status:413});
   let raw:unknown;
-  try { raw=await request.json(); }
-  catch { return NextResponse.json({error:'Мэдээллийг уншиж чадсангүй.'},{status:400}); }
+  try {
+    const text = await request.text();
+    if (new TextEncoder().encode(text).length > 12000)
+      return NextResponse.json({error:'Хүсэлтийн хэмжээ хэтэрсэн.'},{status:413});
+    raw=JSON.parse(text);
+  } catch {
+    return NextResponse.json({error:'Мэдээллийг уншиж чадсангүй.'},{status:400});
+  }
   const parsed=plannerFields.safeParse(raw);
   if(!parsed.success)
     return NextResponse.json({error:'Аяллын хугацаа, сонирхол, төсвөө шалгана уу.'},{status:400});
