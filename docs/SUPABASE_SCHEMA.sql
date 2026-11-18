@@ -78,3 +78,18 @@ begin
 end;$$;
 revoke all on function public.wanderly_reserve_ai_request() from public,anon;
 grant execute on function public.wanderly_reserve_ai_request() to authenticated;
+
+-- Private, account-synced bookmarked destinations.
+create table public.wanderly_favorites(
+ owner_id uuid not null references auth.users(id) on delete cascade,
+ destination_id text not null check(char_length(destination_id) between 1 and 128),
+ created_at timestamptz not null default now(),
+ primary key(owner_id,destination_id)
+);
+create index wanderly_favorites_recent on public.wanderly_favorites(owner_id,created_at desc);
+alter table public.wanderly_favorites enable row level security;
+revoke all on public.wanderly_favorites from anon;
+grant select,insert,delete on public.wanderly_favorites to authenticated;
+create policy wanderly_favorites_select on public.wanderly_favorites for select to authenticated using(owner_id=(select auth.uid()));
+create policy wanderly_favorites_insert on public.wanderly_favorites for insert to authenticated with check(owner_id=(select auth.uid()));
+create policy wanderly_favorites_delete on public.wanderly_favorites for delete to authenticated using(owner_id=(select auth.uid()));

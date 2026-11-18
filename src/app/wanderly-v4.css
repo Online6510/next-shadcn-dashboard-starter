@@ -501,3 +501,24 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
  .v4-auth-panel h1{font-size:clamp(2.3rem,9.5vw,3rem)}
  .v4-auth-lead{font-size:.8rem;margin-bottom:16px}
 }
+
+/* Discovery: reference-style category chips and authenticated favorites */
+.v4-explore .v4-category-chips{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0 13px}
+.v4-category-chips button{border:1px solid #dde8e6;background:#fff;color:#356053;font-size:.79rem;font-weight:850;padding:11px 17px;border-radius:100px;transition:background .18s ease,border-color .18s ease}
+.v4-category-chips button:hover{background:#edf7f0}
+.v4-category-chips button[aria-pressed="true"]{background:#133e32;color:white;border-color:#133e32}
+.v4-category-chips .v4-favorite-filter[aria-pressed="true"]{background:#d4fa59;border-color:#d4fa59;color:#112d22}
+.v4-discover-card{position:relative;min-width:0;height:100%}
+.v4-discover-card .destination-card{height:100%}
+.v4-favorite{position:absolute;z-index:4;right:13px;top:13px;width:39px;height:39px;border-radius:50%;background:#fffef3ed;box-shadow:0 4px 20px #122e352a;color:#305548;border:1px solid #ffffffb5;font-size:25px;display:grid;place-items:center;line-height:1;transition:transform .16s,background .16s}
+.v4-favorite:hover{transform:scale(1.08)}
+.v4-favorite.is-favorite{background:#fff0e7;color:#dc4f50}
+.v4-favorite:disabled{opacity:.5;cursor:wait}
+.v4-favorites-notice{padding:10px 14px;border:1px solid #d7e7dc;background:#f0faf2;color:#1b6648;border-radius:12px;font-size:.83rem;display:flex;gap:15px;align-items:center;margin:15px 0}
+.v4-favorites-notice a{font-weight:900;text-decoration:underline}
+.v4-explore .featured-slider>.v4-discover-card{scroll-snap-align:start}
+@media(max-width:680px){
+ .v4-explore .v4-category-chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:5px;margin-block:14px}
+ .v4-explore .v4-category-chips button{white-space:nowrap;padding:9px 14px;font-size:.74rem;flex:0 0 auto}
+ .v4-favorite{width:36px;height:36px;font-size:23px}
+}
