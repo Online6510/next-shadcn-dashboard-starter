@@ -369,3 +369,16 @@ label,summary,.text-link{color:var(--v3-primary)}
 .v3-login-options input{min-height:50px;width:100%;border:1px solid var(--v3-border);border-radius:12px;padding:10px 14px;background:var(--v3-elevated);color:var(--v3-text)}
 .v3-login-options button{margin-top:20px;width:100%}
 @media(max-width:730px){.v3-login-options{grid-template-columns:1fr}.v3-login-page{padding-top:54px}.v3-auth-link{font-size:.7rem}}
+
+/* Dedicated, low-distraction AI planner panel. */
+.v3-ai-panel{margin-top:25px;padding:22px;border:1px solid var(--v3-border);background:var(--v3-surface);border-radius:18px;display:grid;gap:13px}
+.v3-ai-panel .panel-heading{margin-bottom:0}
+.v3-ai-panel h3{font-size:clamp(1.35rem,2.3vw,1.8rem)}
+.v3-ai-panel .button{width:100%}
+.v3-ai-overview{border-left:3px solid var(--v3-accent);padding:9px 15px;background:var(--v3-elevated);line-height:1.65}
+.v3-ai-panel h4{font-size:1.05rem;font-weight:800}
+.v3-ai-panel .expense-record{margin:0;border-color:var(--v3-border);padding:12px}
+.v3-ai-panel .expense-record p{font-weight:700;line-height:1.6}
+.v3-ai-panel .expense-record small{line-height:1.55;display:block}
+.v3-ai-panel ul{padding-left:19px;list-style:disc}
+.v3-ai-panel li{line-height:1.6;margin-bottom:7px}

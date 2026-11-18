@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { AIPlanBuilder } from './ai-plan-ui';
 import { dateLabel, money } from './catalog';
 import { ActionForm, Field } from './forms';
 import { interests, paces, plannerFields, regions, suggest } from './planner';
@@ -160,6 +161,7 @@ export function PlannerForm() {
         ) : (
           <p className='meta'>Өдөр, төсөв, сонирхлоо сонгоод үр дүнг энд харна уу.</p>
         )}
+        {input && <AIPlanBuilder input={input} />}
       </div>
     </div>
   );

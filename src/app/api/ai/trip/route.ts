@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { z } from 'zod';
 import { generateText, Output } from 'ai';
 import { optionalUser } from '@/lib/wanderly/auth';
 import { serverSupabase } from '@/lib/wanderly/supabase';

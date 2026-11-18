@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { Photo } from './model';
 import { serverSupabase } from '@/lib/wanderly/supabase';
 import { requireUser } from '@/lib/wanderly/auth';
-import { photoLimit, normalizePhoto, mediaObjectPath, assertPhotoCount } from './image-transform';
+import { normalizePhoto, mediaObjectPath, assertPhotoCount } from './image-transform';
 
 const bucket = 'wanderly-journal';
 
