@@ -29,12 +29,12 @@ async function main(){
     'custom map click fills valid coordinates');
    await page.goto(origin+'/design-review-v4/trip',{waitUntil:'load'});
    await page.getByText('Зогсоол нэмэх').first().click();
-   await page.locator('.v4-place-picker').waitFor();
-   await page.locator('.v4-place-picker select[name="destination"]').selectOption('custom');
-   await page.locator('.v4-custom-fields input[name="customName"]').fill('Өөрийн сонгосон газар');
-   await page.locator('.v4-custom-fields input[name="lat"]').fill('49.123456');
-   await page.locator('.v4-custom-fields input[name="lon"]').fill('104.123456');
-   assert.equal(await page.locator('.v4-custom-fields input[name="customName"]').inputValue(),
+   await page.locator('.v4-place-picker').first().waitFor();
+   await page.locator('.v4-place-picker select[name="destination"]').first().selectOption('custom');
+   await page.locator('.v4-custom-fields input[name="customName"]').first().fill('Өөрийн сонгосон газар');
+   await page.locator('.v4-custom-fields input[name="lat"]').first().fill('49.123456');
+   await page.locator('.v4-custom-fields input[name="lon"]').first().fill('104.123456');
+   assert.equal(await page.locator('.v4-custom-fields input[name="customName"]').first().inputValue(),
     'Өөрийн сонгосон газар','Trip stop editor accepts arbitrary place');
   }
   assert.deepEqual(errors,[],'JavaScript runtime errors in public flows');
