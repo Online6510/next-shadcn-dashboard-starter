@@ -10,7 +10,7 @@ async function main(){
   const page=await browser.newPage({viewport:{width:1440,height:900}});
   const errors=[];
   page.on('pageerror',err=>errors.push(err.message));
-  for(const size of [{width:1440,height:900},{width:390,height:844}]){
+  for(const size of [{width:1440,height:900},{width:1024,height:768},{width:768,height:1024},{width:430,height:932},{width:390,height:844},{width:360,height:780}]){
    await page.setViewportSize(size);
    for(const route of routes){
     const res=await page.goto(origin+route,{waitUntil:'load',timeout:20000});
@@ -21,12 +21,18 @@ async function main(){
    await page.goto(origin+'/map',{waitUntil:'load'});
    await page.locator('.v4-explorer-map.leaflet-container').waitFor({timeout:12000});
    const map=page.locator('.v4-explorer-map.leaflet-container');
-   await map.click({position:{x:Math.min(size.width>800?650:180,size.width-30),y:250}});
+   const rect=await map.boundingBox();
+   assert.ok(rect,'map visible in all viewport sizes');
+   await map.click({position:{x:Math.floor(rect.width*.56),y:Math.min(250,Math.floor(rect.height*.68))}});
    await page.locator('.v4-map-selected').waitFor({timeout:4000});
    const name=await page.locator('.v4-map-selected input').inputValue();
    assert.ok(name.length>=1,'map click sets location name');
    assert.ok((await page.locator('.v4-map-selected small').innerText()).includes('°'),
     'custom map click fills valid coordinates');
+   await page.goto(origin+'/design-review-v4/ai',{waitUntil:'load'});
+   await page.locator('.v4-chat-message').first().waitFor();
+   const chatScroll=await page.locator('.v4-chat-history').evaluate(el=>el.scrollTop);
+   assert.equal(chatScroll,0,'AI demo must not start scrolled past first message');
    await page.goto(origin+'/design-review-v4/trip',{waitUntil:'load'});
    await page.getByText('Зогсоол нэмэх').first().click();
    await page.locator('.v4-place-picker').first().waitFor();
@@ -38,7 +44,7 @@ async function main(){
     'Өөрийн сонгосон газар','Trip stop editor accepts arbitrary place');
   }
   assert.deepEqual(errors,[],'JavaScript runtime errors in public flows');
-  console.log('Wanderly V4 browser: public pages, mobile layout, custom map pin and trip editor OK');
+  console.log('Wanderly V4 browser: 6 responsive sizes, routes, map click, AI first message, custom trip editor OK');
  }finally{await browser.close();}
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});
