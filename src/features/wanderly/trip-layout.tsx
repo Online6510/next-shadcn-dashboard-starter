@@ -63,6 +63,12 @@ export function TripLayout({trip,query}:{
         <p>{trip.aiBrief}</p>
         <small>AI-ийн санал нь баталгаатай зам, үнэ, цаг агаар эсвэл үйлчилгээний захиалга биш. Газрын зураг дээр газраа өөрөө нэмнэ үү.</small>
       </details>}
+      <div className='v4-trip-export-bar' aria-label='Аяллын экспорт'>
+        <strong>Аяллын хөтөлбөр татах</strong>
+        <a href={'/api/trips/'+id+'/export?format=gpx'} download>⌖ GPX цэгүүд</a>
+        <a href={'/api/trips/'+id+'/export?format=ics'} download>▦ Календарь</a>
+        <a href={'/api/trips/'+id+'/export?format=csv'} download>⇩ CSV жагсаалт</a>
+      </div>
       <details className='panel editor trip-settings'>
         <summary>Аяллын мэдээлэл засах</summary>
         <TripForm trip={trip} />

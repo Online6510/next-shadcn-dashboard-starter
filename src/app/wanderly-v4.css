@@ -632,3 +632,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .v4-trip-ai-brief p{white-space:pre-wrap;line-height:1.9;color:#345b51;margin:13px 0 9px;font-size:.86rem}
 .v4-trip-ai-brief small{color:#607971;font-size:.69rem;line-height:1.6}
 @media(max-width:680px){.v4-chat-trip-fields .fields-row{grid-template-columns:1fr 1fr}.v4-chat-trip-fields input{width:100%}}
+
+/* Exports use real GPS waypoint data; road tracks never invented */
+.v4-trip-export-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:9px 0 11px}
+.v4-trip-export-bar strong{font-size:.74rem;color:#55736b;margin-right:4px}
+.v4-trip-export-bar a{border:1px solid #cde3d8;background:#f2f9f4;color:#175e46;border-radius:99px;font-size:.71rem;font-weight:850;padding:8px 13px}
+.v4-trip-export-bar a:hover{background:#d4fa59;border-color:#d4fa59}
