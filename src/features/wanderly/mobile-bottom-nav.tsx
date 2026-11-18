@@ -5,7 +5,7 @@ import { IconHome,IconCompass,IconCalendarEvent,IconPhoto,IconUser } from '@tabl
 
 const items=[
  {href:'/',label:'Нүүр',icon:IconHome},
- {href:'/explore',label:'Судлах',icon:IconCompass},
+ {href:'/map',label:'Судлах',icon:IconCompass},
  {href:'/trips',label:'Аялал',icon:IconCalendarEvent},
  {href:'/journal',label:'Дурсамж',icon:IconPhoto},
  {href:'/settings/appearance',label:'Би',icon:IconUser}

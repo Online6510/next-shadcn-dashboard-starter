@@ -43,12 +43,16 @@ jobs:
             --wait-for-timeout 1100 http://127.0.0.1:3100/explore docs/screenshots/v4/explore-desktop.png
           bunx playwright screenshot --browser chromium --viewport-size "1440,900" \
             --wait-for-timeout 1100 http://127.0.0.1:3100/login docs/screenshots/v4/login-desktop.png
+          bunx playwright screenshot --browser chromium --viewport-size "1440,900" \
+            --wait-for-timeout 1800 http://127.0.0.1:3100/map docs/screenshots/v4/map-desktop.png
           bunx playwright screenshot --browser chromium --viewport-size "390,844" \
             --wait-for-timeout 1100 http://127.0.0.1:3100/ docs/screenshots/v4/home-mobile.png
           bunx playwright screenshot --browser chromium --viewport-size "390,844" \
             --wait-for-timeout 1100 http://127.0.0.1:3100/explore docs/screenshots/v4/explore-mobile.png
           bunx playwright screenshot --browser chromium --viewport-size "390,844" \
             --wait-for-timeout 1100 http://127.0.0.1:3100/login docs/screenshots/v4/login-mobile.png
+          bunx playwright screenshot --browser chromium --viewport-size "390,844" \
+            --wait-for-timeout 1800 http://127.0.0.1:3100/map docs/screenshots/v4/map-mobile.png
       - name: Upload
         if: always()
         uses: actions/upload-artifact@v4

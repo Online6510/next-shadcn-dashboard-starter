@@ -9,7 +9,7 @@ export default async function Explore({searchParams}:{searchParams:Promise<{q?:s
     <h1>Аяллын газруудыг<br/><span>судлах.</span></h1>
     <p>Сонирхсон газраа хайж, сонгож, өөрийн аялалдаа нэмээрэй. Зөвхөн жагсаалтын газруудаар хязгаарлагдахгүй.</p>
    </div>
-   <Link href='/trips/new' className='v4-button v4-button-dark'>＋ Аялал үүсгэх</Link>
+   <div className='v4-explore-actions'><Link href='/map' className='v4-button v4-button-lime'>⌖ Газрын зураг нээх →</Link><Link href='/trips/new' className='v4-button v4-button-dark'>＋ Аялал үүсгэх</Link></div>
   </section>
   <section className='v4-content v4-explore-body'><Discover initialQuery={query.q?.slice(0,120)||''}/></section>
   <div className='v4-content v4-explore-note'>

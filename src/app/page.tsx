@@ -26,7 +26,7 @@ export default async function Home() {
      </form>
      <div className='v4-hero-actions'>
       <Link href='/trips/new' className='v4-button v4-button-lime'>⌖ &nbsp; Аяллаа төлөвлөх <span>→</span></Link>
-      <Link href='/explore' className='v4-button v4-button-outline'>Газруудыг судлах <span>↗</span></Link>
+      <Link href='/map' className='v4-button v4-button-outline'>Газрын зураг нээх <span>↗</span></Link>
      </div>
     </div>
     <div className='v4-hero-deck' aria-label='Онцлох аяллын гурван газар'>

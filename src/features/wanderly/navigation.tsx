@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 const pages = [
   { href: '/', label: 'Нүүр' },
   { href: '/explore', label: 'Судлах' },
+  { href: '/map', label: 'Газрын зураг' },
   { href: '/trips', label: 'Аялал төлөвлөх' },
   { href: '/journal', label: 'Дурсамж' },
   { href: '/trips/suggest', label: 'AI Туслах' },
