@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mediaObjectPath, normalizePhoto, storePhotos } from './media';
+import { mediaObjectPath, normalizePhoto, assertPhotoCount } from './image-transform';
 import { plannerFields, suggest } from './planner';
 import { expenseFields, entryFields, budgetTotals } from './model';
 import { sample } from './seed';
@@ -39,13 +39,9 @@ test('reject fractional MNT', () =>
 test('zero budget records actual debt', () =>
   assert.equal(budgetTotals({ ...sample, budget: 0 }).remaining, -515000));
 test('invalid media keys rejected', () => assert.throws(() => mediaObjectPath('123', '../trips.sqlite')));
-test('media count limit checked', async () =>
-  await assert.rejects(
-    storePhotos(
-      Array.from({ length: 7 }, () => new File([], 'x.png')),
-      'x'
-    )
-  ));
+test('media count limit checked', () => assert.throws(() =>
+  assertPhotoCount(Array.from({length:7}, () => new File([], 'x.png')))
+));
 test('reject corrupt image bytes', async () =>
   await assert.rejects(
     normalizePhoto(new File(['incorrect'], 'x.png', { type: 'image/png' }))
