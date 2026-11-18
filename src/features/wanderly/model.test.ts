@@ -70,7 +70,7 @@ test('AI advice can be safely attached to an editable custom trip',()=>{
   aiBrief:'AI-ийн аяллын зөвлөгөө — баталгаагүй.'
  });
  assert.equal(trip.success,true);
- if(trip.success)assert.match(trip.data.aiBrief||'','AI');
+ if(trip.success)assert.match(trip.data.aiBrief||'',/AI/);
  assert.equal(tripFields.safeParse({
   title:'Аялал',start:'2026-12-02',end:'2026-12-04',
   travelers:1,budget:0,cover:'custom',aiBrief:'x'.repeat(5001)
