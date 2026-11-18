@@ -1,13 +1,15 @@
 import Link from 'next/link';
 import { getTrips } from '@/features/wanderly/db';
+import { requireUser } from '@/lib/wanderly/auth';
 import { destinations } from '@/features/wanderly/catalog';
 import { Cover } from '@/features/wanderly/visuals';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Дурсамж' };
 
-export default function Journals() {
-  const trips = getTrips();
+export default async function Journals() {
+  await requireUser();
+  const trips = await getTrips();
   return (
     <section className='container section'>
       <p className='eyebrow'>ДУРСАМЖИЙН ДЭВТЭР</p>

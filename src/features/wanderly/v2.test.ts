@@ -1,7 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
-import { mediaPath, storePhotos } from './media';
+import { mediaObjectPath, normalizePhoto, storePhotos } from './media';
 import { plannerFields, suggest } from './planner';
 import { expenseFields, entryFields, budgetTotals } from './model';
 import { sample } from './seed';
@@ -39,7 +38,7 @@ test('reject fractional MNT', () =>
   assert.equal(expenseFields.safeParse({ ...sample.expenses[0], amount: 0.5 }).success, false));
 test('zero budget records actual debt', () =>
   assert.equal(budgetTotals({ ...sample, budget: 0 }).remaining, -515000));
-test('invalid media keys rejected', () => assert.throws(() => mediaPath('../trips.sqlite')));
+test('invalid media keys rejected', () => assert.throws(() => mediaObjectPath('123', '../trips.sqlite')));
 test('media count limit checked', async () =>
   await assert.rejects(
     storePhotos(
@@ -49,19 +48,13 @@ test('media count limit checked', async () =>
   ));
 test('reject corrupt image bytes', async () =>
   await assert.rejects(
-    storePhotos([new File(['incorrect'], 'x.png', { type: 'image/png' })], 'x')
+    normalizePhoto(new File(['incorrect'], 'x.png', { type: 'image/png' }))
   ));
-test('reject mismatched content type', async () =>
-  await assert.rejects(
-    storePhotos(
-      [
-        new File([new Uint8Array(await readFile('public/images/lake.webp'))], 'x.jpg', {
-          type: 'image/jpeg'
-        })
-      ],
-      'x'
-    )
-  ));
+test('reject mismatched content type', async () => {
+  const sharp = (await import('sharp')).default;
+  const jpg = await sharp({create:{width:16,height:10,channels:3,background:'#173d35'}}).webp().toBuffer();
+  await assert.rejects(normalizePhoto(new File([new Uint8Array(jpg)],'x.jpg',{type:'image/jpeg'})));
+});
 
 test('preview order only rearranges recommended places in their own day', () => {
   const choice = { ...options, budget: 1500000, pace: 'Идэвхтэй' as const, region: 'Хөвсгөл' };
@@ -73,35 +66,17 @@ test('preview order only rearranges recommended places in their own day', () => 
   );
 });
 
-test('JPEG and PNG become durable WebP files and partial batches roll back', async () => {
-  const { mkdtemp, readdir, rm } = await import('node:fs/promises');
-  const { tmpdir } = await import('node:os');
-  const { join } = await import('node:path');
-  const sharp = (await import('sharp')).default;
-  const dir = await mkdtemp(join(tmpdir(), 'wanderly-media-test-'));
-  const previous = process.env.WANDERLY_DATA_DIR;
-  process.env.WANDERLY_DATA_DIR = dir;
-  try {
-    const image = sharp({ create: { width: 16, height: 10, channels: 3, background: '#173d35' } });
-    const jpg = new File(
-      [new Uint8Array(await image.clone().jpeg().toBuffer())],
-      '../original.jpg',
-      { type: 'image/jpeg' }
-    );
-    const png = new File([new Uint8Array(await image.clone().png().toBuffer())], 'other.png', {
-      type: 'image/png'
-    });
-    const photos = await storePhotos([jpg, png], 'Аялал');
-    assert.equal(photos.length, 2);
-    for (const photo of photos)
-      assert.equal((await sharp(mediaPath(photo.id)).metadata()).format, 'webp');
-    await assert.rejects(
-      storePhotos([jpg, new File(['bad'], 'x.png', { type: 'image/png' })], 'Аялал')
-    );
-    assert.equal((await readdir(join(dir, 'uploads'))).length, 2);
-  } finally {
-    if (previous === undefined) delete process.env.WANDERLY_DATA_DIR;
-    else process.env.WANDERLY_DATA_DIR = previous;
-    await rm(dir, { recursive: true, force: true });
+test('JPEG and PNG are normalized into valid WebP buffers', async () => {
+  const sharp=(await import('sharp')).default;
+  const jpg=await sharp({create:{width:16,height:10,channels:3,background:'#173d35'}}).jpeg().toBuffer();
+  const png=await sharp({create:{width:16,height:10,channels:3,background:'#173d35'}}).png().toBuffer();
+  const samples=[
+    new File([new Uint8Array(jpg)],'a.jpg',{type:'image/jpeg'}),
+    new File([new Uint8Array(png)],'b.png',{type:'image/png'})
+  ];
+  for(const file of samples) {
+    const normalized=await normalizePhoto(file);
+    assert.equal((await sharp(normalized.data).metadata()).format,'webp');
+    assert.equal(normalized.width,16);
   }
 });

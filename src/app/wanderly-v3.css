@@ -356,3 +356,16 @@ label,summary,.text-link{color:var(--v3-primary)}
  .v3-journal-page .journal-bar{margin-block:13px}
  .v3-appearance h1{font-size:clamp(2.35rem,9.1vw,3.35rem)}
 }
+
+/* Production auth: keep the journal-like visual language in account controls. */
+.v3-auth-link{display:inline-flex;padding:8px 13px;border:1px solid var(--v3-border);border-radius:24px;color:var(--v3-primary);text-decoration:none;font-weight:750;font-size:.8rem;white-space:nowrap}
+.v3-auth-nav{display:flex;align-items:center}
+.v3-login-page h1{font-size:clamp(2.7rem,5.6vw,5.5rem)}
+.v3-login-page h1 em{color:var(--v3-accent)}
+.v3-login-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin:46px auto 0;max-width:980px}
+.v3-login-options .panel{padding:clamp(25px,3.7vw,42px);border-radius:22px;box-shadow:var(--v3-shadow)}
+.v3-login-options .panel h2{font-size:clamp(1.55rem,2.2vw,2.3rem);margin-bottom:12px}
+.v3-login-options label{display:grid;gap:8px;font-size:.84rem;margin-top:12px;font-weight:750}
+.v3-login-options input{min-height:50px;width:100%;border:1px solid var(--v3-border);border-radius:12px;padding:10px 14px;background:var(--v3-elevated);color:var(--v3-text)}
+.v3-login-options button{margin-top:20px;width:100%}
+@media(max-width:730px){.v3-login-options{grid-template-columns:1fr}.v3-login-page{padding-top:54px}.v3-auth-link{font-size:.7rem}}

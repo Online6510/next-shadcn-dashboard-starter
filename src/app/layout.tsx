@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Brand } from '@/features/wanderly/visuals';
 import { Navigation } from '@/features/wanderly/navigation';
+import { AuthNav } from '@/features/wanderly/auth-nav';
 import '@fontsource-variable/lora';
 import '@fontsource-variable/manrope';
 import './wanderly.css';
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className='header-inner'>
             <Brand />
             <Navigation />
+            <AuthNav />
             <Link href='/trips/new' className='button header-action'>
               Аялал үүсгэх <span aria-hidden='true'>→</span>
             </Link>

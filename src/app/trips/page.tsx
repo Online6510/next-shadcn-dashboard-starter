@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { destinations, dateLabel, money, mongoliaToday } from '@/features/wanderly/catalog';
 import { getTrips } from '@/features/wanderly/db';
+import { requireUser } from '@/lib/wanderly/auth';
 import { Cover } from '@/features/wanderly/visuals';
 
 export const dynamic = 'force-dynamic';
@@ -12,7 +13,8 @@ export default async function Trips({
   searchParams: Promise<{ status?: string }>;
 }) {
   const { status: selected } = await searchParams;
-  const trips = getTrips();
+  await requireUser();
+  const trips = await getTrips();
   const today = mongoliaToday();
   const statusOf = (trip: (typeof trips)[number]) =>
     today < trip.start ? 'Төлөвлөсөн' : today > trip.end ? 'Дууссан' : 'Үргэлжилж буй';

@@ -4,9 +4,9 @@ import { destinations } from '@/features/wanderly/catalog';
 import { Cover, DestinationCard } from '@/features/wanderly/visuals';
 
 export const dynamic = 'force-dynamic';
-export default function Home() {
-  const demo = getTrip('khuvsgul-demo');
-  const tripCount = getTrips().length;
+export default async function Home() {
+  const [demo, trips] = await Promise.all([getTrip('khuvsgul-demo'), getTrips()]);
+  const tripCount = trips.length;
   return (
     <>
       <section className='hero v3-hero'>

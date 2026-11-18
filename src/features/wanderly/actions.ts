@@ -7,6 +7,7 @@ import { ZodError } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createTrip, deleteTrip, updateTrip } from './db';
+import { requireUser } from '@/lib/wanderly/auth';
 import { plannerFields, suggest } from './planner';
 import { entryFields, expenseFields, listDays, stopFields, tripFields } from './model';
 
@@ -33,6 +34,7 @@ function replace<T extends { id: string }>(items: T[], value: T) {
 
 export async function save(target: Target, previous: string, form: FormData) {
   void previous;
+  await requireUser();
   const fields = Object.fromEntries(form);
   let next = target.trip ? '/trips/' + target.trip : '/trips';
   let added: Photo[] = [];
@@ -42,7 +44,7 @@ export async function save(target: Target, previous: string, form: FormData) {
       const input = plannerFields.parse({ ...fields, interests: form.getAll('interests') });
       const plan = suggest(input, form.getAll('order').slice(0, 21).map(String));
       const id = randomUUID();
-      createTrip({
+      await createTrip({
         ...plan.trip,
         id,
         expenses: [],
@@ -63,7 +65,7 @@ export async function save(target: Target, previous: string, form: FormData) {
     } else if (target.kind === 'trip') {
       const value = tripFields.parse(fields);
       if (target.trip) {
-        updateTrip(target.trip, (trip) => {
+        await updateTrip(target.trip, (trip) => {
           const days = listDays(value.start, value.end);
           if (trip.stops.some((stop) => !days.includes(stop.day))) {
             throw new Error('Огноо өөрчлөхөөс өмнө хугацаанаас гадуурх зогсоолуудыг шилжүүлнэ үү.');
@@ -72,12 +74,12 @@ export async function save(target: Target, previous: string, form: FormData) {
         });
       } else {
         const id = randomUUID();
-        createTrip({ ...value, id, stops: [], expenses: [], entries: [] });
+        await createTrip({ ...value, id, stops: [], expenses: [], entries: [] });
         const selected = fields.destination === value.cover ? '?add=' + value.cover : '';
         next = '/trips/' + id + selected;
       }
     } else if (target.kind === 'delete-trip') {
-      removed.push(...deleteTrip(target.trip));
+      removed.push(...(await deleteTrip(target.trip)));
       next = '/trips';
     } else {
       if (target.kind === 'entry') {

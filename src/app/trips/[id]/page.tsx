@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTrip } from '@/features/wanderly/db';
+import { requireUser } from '@/lib/wanderly/auth';
 import { destinations, dateLabel, money } from '@/features/wanderly/catalog';
 import { listDays, budgetTotals } from '@/features/wanderly/model';
 import { Cover } from '@/features/wanderly/visuals';
@@ -19,7 +20,8 @@ export default async function TripPage({
 }) {
   const { id } = await params;
   const query = await searchParams;
-  const trip = getTrip(id);
+  await requireUser();
+  const trip = await getTrip(id);
   if (!trip) notFound();
   const days = listDays(trip.start, trip.end);
   const day = query.day && days.includes(query.day) ? query.day : days[0];

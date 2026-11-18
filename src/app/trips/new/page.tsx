@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { requireUser } from '@/lib/wanderly/auth';
 import { destinations } from '@/features/wanderly/catalog';
 import { TripForm } from '@/features/wanderly/forms';
 import { Cover } from '@/features/wanderly/visuals';
@@ -10,6 +11,7 @@ export default async function NewTrip({
 }: {
   searchParams: Promise<{ destination?: string }>;
 }) {
+  await requireUser();
   const { destination } = await searchParams;
   const place = destinations.find((item) => item.id === destination);
   return (
