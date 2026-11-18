@@ -5,7 +5,6 @@ import { ThemeSelector } from '../themes/theme-selector';
 import { ThemeModeToggle } from '../themes/theme-mode-toggle';
 import CtaGithub from './cta-github';
 import { SidebarToggle } from './sidebar-toggle';
-import { NotificationCenter } from '@/features/notifications/components/notification-center';
 
 export default function Header() {
   return (
@@ -25,9 +24,7 @@ export default function Header() {
         <ThemeModeToggle />
         <div className='hidden sm:block'>
           <ThemeSelector />
-        </div>
-        <NotificationCenter />
-      </div>
+        </div>      </div>
     </header>
   );
 }
