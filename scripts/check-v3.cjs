@@ -49,8 +49,11 @@ async function run() {
         assert.equal(response.status(), 200, 'HTTP 200 required: ' + route);
         await page.evaluate(async () => {
           await document.fonts.ready;
-          await Promise.all([...document.images].map((img) => img.decode().catch(() => {})));
+          for (const img of document.images) {
+            if (img.getBoundingClientRect().top < innerHeight + 160) img.loading = 'eager';
+          }
         });
+        await page.waitForTimeout(350);
         const overflow = await page.evaluate(
           () => document.documentElement.scrollWidth > window.innerWidth + 2
         );
