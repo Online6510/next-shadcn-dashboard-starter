@@ -18,6 +18,13 @@ async function main(){
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+3);
     assert.equal(overflow,false,'Overflow '+size.width+'px '+route);
    }
+   await page.goto(origin+'/login',{waitUntil:'load'});
+   await page.getByRole('tab',{name:'Бүртгүүлэх'}).click();
+   assert.equal(await page.getByRole('heading',{name:'Шинээр бүртгүүлэх'}).isVisible(),true,
+    'Sign up form must appear when changing tabs');
+   await page.getByRole('tab',{name:'Нэвтрэх'}).click();
+   assert.equal(await page.getByRole('heading',{name:'Эргэн тавтай морил'}).isVisible(),true,
+    'Sign in form must return without page navigation');
    await page.goto(origin+'/map',{waitUntil:'load'});
    await page.locator('.v4-explorer-map.leaflet-container').waitFor({timeout:12000});
    const map=page.locator('.v4-explorer-map.leaflet-container');
@@ -34,6 +41,10 @@ async function main(){
    const chatScroll=await page.locator('.v4-chat-history').evaluate(el=>el.scrollTop);
    assert.equal(chatScroll,0,'AI demo must not start scrolled past first message');
    await page.goto(origin+'/design-review-v4/trip',{waitUntil:'load'});
+   await page.getByText('Аяллын мэдээлэл засах').first().click();
+   await page.locator('select[name="cover"]').first().selectOption('custom');
+   assert.equal(await page.locator('input[name="coverLabel"]').first().isVisible(),true,
+    'Existing trip can switch to arbitrary destination / custom cover');
    await page.getByText('Зогсоол нэмэх').first().click();
    await page.locator('.v4-place-picker').first().waitFor();
    await page.locator('.v4-place-picker select[name="destination"]').first().selectOption('custom');
