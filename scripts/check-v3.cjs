@@ -26,7 +26,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
 
-    await page.goto(base + '/settings/appearance', { waitUntil: 'networkidle' });
+    await page.goto(base + '/settings/appearance', { waitUntil: 'load' });
     const midnight = page.getByRole('button', { name: /Midnight Explorer/ });
     await midnight.click();
     assert.equal(await page.locator('html').getAttribute('data-theme'), 'midnight');
@@ -45,7 +45,7 @@ async function run() {
     ]) {
       await page.setViewportSize({ width, height });
       for (const [route, name] of pages) {
-        const response = await page.goto(base + route, { waitUntil: 'networkidle' });
+        const response = await page.goto(base + route, { waitUntil: 'load' });
         assert.equal(response.status(), 200, 'HTTP 200 required: ' + route);
         await page.evaluate(async () => {
           await document.fonts.ready;
