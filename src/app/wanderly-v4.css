@@ -582,3 +582,32 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .v4-ai-place-editor select,.v4-ai-day-review textarea{width:100%;min-width:0;background:#fff;color:#153d32;border:1px solid #d6e2dc;border-radius:10px;padding:9px;font-size:.8rem}
 .v4-ai-place-editor .small-button{min-height:38px}
 .v4-ai-day-review>button{width:max-content;font-size:.74rem}
+
+/* Screenshot-review fix: journal should show scrapbook content above the fold. */
+.v3-journal-page>.container.section{padding-top:24px}
+.v3-journal-page .journal-cover{min-height:196px;max-height:205px}
+.v3-journal-page .journal-cover-inner{padding:19px 30px}
+.v3-journal-page .journal-cover h1{font-size:clamp(2.05rem,3.15vw,3.3rem)}
+.v3-journal-page .journal-bar{margin:10px auto 8px;gap:8px}
+.v3-journal-page .journal-bar .journal-editor{margin:0}
+.v3-journal-page .story-switch{margin:5px auto 5px}
+.v3-journal-page .journal-nav{margin:1px 0 7px;padding:3px 0 6px}
+.v3-journal-page .v3-scrapbook{padding-top:21px}
+.v3-journal-page .v3-scrapbook-chapter{padding-top:0}
+@media(max-width:680px){
+ .v3-journal-page>.container.section{padding-top:14px}
+ .v3-journal-page .v3-journal-title-line{margin:6px 0 8px}
+ .v3-journal-page .journal-cover{height:188px;min-height:188px;max-height:188px}
+ .v3-journal-page .journal-cover-inner{padding:14px 19px}
+ .v3-journal-page .journal-cover h1{font-size:clamp(1.8rem,7.6vw,2.3rem);margin:5px 0}
+ .v3-journal-page .journal-cover .intro{font-size:.75rem;line-height:1.5;margin:6px 0}
+ .v3-journal-page .journal-bar{display:grid;grid-template-columns:auto 1fr;gap:7px;margin:10px 0}
+ .v3-journal-page .journal-bar .print-story{font-size:.67rem;padding:8px;min-height:40px}
+ .v3-journal-page .journal-bar .journal-editor{min-width:0}
+ .v3-journal-page .journal-bar .journal-editor summary{font-size:.73rem;padding:11px}
+ .v3-journal-page .story-switch{margin:7px 0}
+ .v3-journal-page .journal-nav{justify-content:flex-start;flex-wrap:nowrap;white-space:nowrap;max-width:100%;overflow-x:auto;margin:4px 0 7px}
+ .v3-journal-page .journal-nav .chip{flex-shrink:0;padding:8px 12px;font-size:.68rem}
+ .v3-journal-page .v3-scrapbook{padding:15px 12px;border-radius:15px}
+ .v3-journal-page .v3-scrapbook-chapter>header h2{font-size:1.25rem}
+}
