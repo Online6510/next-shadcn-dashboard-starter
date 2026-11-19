@@ -1,5 +1,14 @@
 # Wanderly — Монгол орноор аялъя
 
+## V4 Atlas experience (feature branch)
+
+**AI Free:** Wanderly AI Chat + structured аяллын төлөвлөгч төлбөргүй GroqCloud Free модель ашигладаг. [Тохируулах заавар](docs/FREE_AI_SETUP.md). Vercel AI Gateway-д төлбөрийн карт холбох шаардлагагүй.
+
+Шинэ dark-navy/lime дизайн, mobile bottom navigation, `/map` интерактив газрын зураг, хүссэн цэг/байршлыг шууд аялалд хадгалах боломж нэмэгдсэн. Аялал үүсгэхэд бэлэн газрын сонголт шаардлагагүй; өөрийн чиглэлийн нэртэй, дурын координаттай аяллыг бүтээнэ. `47.918, 106.917` форматтай координатын хайлт API key-гүй ажиллана. Машин, алхах, дугуй, явган аяллын бодит маршрут нь API түлхүүртэй үед тооцогдоно. Тогтмол 16 газрын жагсаалт нь зөвхөн санал; дурын координаттай газрыг төлөвлөн хадгалж болно.
+
+**API тохиргооны нөхцөл:** Map дээр дурын цэг тавих нь Geoapify key-гүй ажиллана. Харин дэлхийн хэмжээнд нэрээр хайх болон замын бодит маршрут тооцоход `GEOAPIFY_API_KEY` шаардлагатай. Нэвтрэлттэй бүрэн end-to-end болон live AI inference баталгаажаагүй тул branch нь Preview/Draft хэвээр байна. [V4 дэлгэрэнгүй заавар](docs/V4_ATLAS_IMPLEMENTATION.md).
+
+
 Wanderly бол Монголын аяллыг төлөвлөх, зардал хянах, дурсамж/зураг хадгалах, AI-аар аяллын нэмэлт санал авах **Next.js 16** веб апп.
 
 ## Одоогийн production architecture (Supabase branch)
@@ -8,7 +17,7 @@ Wanderly бол Монголын аяллыг төлөвлөх, зардал х�
 - **Supabase PostgreSQL:** Аялал, даалгавар, зардал, дурсамжийг хэрэглэгч тус бүрт хадгалах JSONB document + revision.
 - **RLS:** Хэрэглэгч зөвхөн өөрийн аяллыг уншиж/үүсгэж/засаж/устгана. Service role key ашиглаагүй.
 - **Supabase Storage:** Хэрэглэгчийн ID-аар тусгаарлагдсан private `wanderly-journal` bucket, WebP upload, authenticated download route.
-- **Vercel AI Gateway:** `google/gemini-2.5-flash-lite` загварын сервер талаас өгдөг AI аяллын санал. 24 цагт 5 хүсэлт/хэрэглэгч; AI хариу бодит үнэ эсвэл замын баталгаатай мэдээлэл биш.
+- **GroqCloud Free AI:** `openai/gpt-oss-20b` үнэгүй API модель. Төлбөрийн карт шаардлагагүй Free төлөвлөгөөг ашиглана; нэвтэрсэн хэрэглэгч 24 цагт 5 AI хүсэлт илгээнэ. API key тохируулаагүй бол AI идэвхгүй; **төлбөртэй Vercel Gateway рүү шилжихгүй.**
 - **V3 UI/UX:** Cinematic Home, Explore, Trip Workspace, Budget, scrapbook Journal, гурван өнгөний theme.
 
 ## Local run
@@ -22,7 +31,7 @@ cp .env.example .env.local
 bun run dev
 ```
 
-AI-ийг локал орчинд ашиглах бол `AI_GATEWAY_API_KEY`-г **зөвхөн** хувийн `.env.local` файлд нэм. Vercel deployment-д OIDC token автоматаар өгөгдөх боломжтой тул provider API key-г source code-д бүү хадгал.
+AI-г үнэгүй ашиглах бол GroqCloud Free аккаунтаас `GROQ_API_KEY` үүсгээд **зөвхөн** `.env.local` эсвэл Vercel-ийн private environment variable-д оруул. Төлбөрийн карт хэрэггүй. [Үнэгүй AI холбох заавар](docs/FREE_AI_SETUP.md).
 
 ```bash
 bun test

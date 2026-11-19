@@ -1,7 +1,7 @@
 name: Wanderly Supabase production QA
 on:
   push:
-    branches: [feat/wanderly-supabase-production]
+    branches: [feat/wanderly-supabase-production, feat/wanderly-v4-atlas-experience]
   pull_request:
     branches: [feat/wanderly-visual-fidelity-v3]
 permissions:

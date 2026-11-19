@@ -51,9 +51,12 @@ export function Brand() {
   return (
     <Link href='/' className='brand' aria-label='Wanderly — нүүр'>
       <span className='brand-mark' aria-hidden='true'>
-        ✧
+        <svg width='28' height='25' viewBox='0 0 32 28' fill='none' xmlns='http://www.w3.org/2000/svg'>
+          <path d='M2 23.5 12.1 4.5a2 2 0 0 1 3.4 0l4.5 8.5-3.8 6.2-3.2-6.1-5.6 10.4H2Z' fill='currentColor'/>
+          <path d='M14.7 23.5 22.4 9a2 2 0 0 1 3.4 0L32 23.5h-6.3l-2-5-2.6 5h-6.4Z' fill='currentColor'/>
+        </svg>
       </span>
-      Wanderly<span className='brand-dot'>.</span>
+      Wanderly
     </Link>
   );
 }

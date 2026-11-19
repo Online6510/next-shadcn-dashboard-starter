@@ -1,9 +1,10 @@
 'use client';
 
-import { cloneElement, useActionState, useId } from 'react';
+import { cloneElement, useActionState, useId, useState } from 'react';
 import type { ReactElement, ReactNode } from 'react';
 import { save } from './actions';
 import { UploadPicker } from './upload-picker';
+import { PlacePicker } from './place-picker';
 import { categories, destinations, dateLabel } from './catalog';
 import type { Entry, Expense, Stop, Trip } from './model';
 
@@ -58,19 +59,8 @@ export function Field({
   );
 }
 
-function DestinationSelect({ value, id }: { value?: string; id?: string }) {
-  return (
-    <select id={id} name='destination' defaultValue={value || destinations[0].id}>
-      {destinations.map((place) => (
-        <option key={place.id} value={place.id}>
-          {place.name}
-        </option>
-      ))}
-    </select>
-  );
-}
-
 export function TripForm({ trip, selection }: { trip?: Trip; selection?: string }) {
+  const [coverChoice,setCoverChoice]=useState(trip?.cover || selection || 'custom');
   return (
     <ActionForm
       target={{ kind: 'trip', trip: trip?.id }}
@@ -116,15 +106,23 @@ export function TripForm({ trip, selection }: { trip?: Trip; selection?: string 
           />
         </Field>
       </div>
-      <Field label='Нүүр зураг / очих газар'>
-        <select name='cover' defaultValue={trip?.cover || selection || destinations[0].id}>
+      <Field label='Аяллын нүүр зураг'>
+        <select name='cover' value={coverChoice} onChange={e=>setCoverChoice(e.target.value)}>
+          <option value='custom'>✦ Өөрийн хүссэн аялал — бэлэн газрын хязгааргүй</option>
           {destinations.map((place) => (
             <option key={place.id} value={place.id}>
-              {place.name}
+              {place.name} · зурагтай
             </option>
           ))}
         </select>
       </Field>
+      {coverChoice === 'custom' && (
+        <Field label='Аяллын чиглэл / газрын нэр (заавал биш)'>
+          <input name='coverLabel' maxLength={100} defaultValue={trip?.coverLabel}
+            placeholder='Жишээ: Архангай, Дархан эсвэл миний сонгосон газар' />
+        </Field>
+      )}
+      <p className='meta'>Нүүр зургийн жагсаалт нь зөвхөн чимэглэл. Аялал үүсгэсний дараа газрын зураг дээр дурын цэг сонгож, ямар ч газраар маршрут бүтээж болно.</p>
       <p className='meta'>Нэг аяллын үргэлжлэх хугацаа 30 хүртэл хоног байна.</p>
     </ActionForm>
   );
@@ -148,10 +146,8 @@ export function StopForm({
       target={{ kind: 'stop', trip, id: stop?.id }}
       label={stop ? 'Зогсоол хадгалах' : 'Зогсоол нэмэх'}
     >
+      <PlacePicker stop={stop} selection={selection}/>
       <div className='fields-row'>
-        <Field label='Очих газар'>
-          <DestinationSelect value={stop?.destination || selection} />
-        </Field>
         <Field label='Аяллын өдөр'>
           <select name='day' defaultValue={stop?.day || day}>
             {days.map((date) => (

@@ -17,20 +17,37 @@ export const tripFields = z
     end: z.iso.date(),
     travelers: integer(1, 100),
     budget: amount,
-    cover: destinationId
+    cover: z.union([destinationId,z.literal('custom')]),
+    coverLabel: z.string().trim().max(100).optional(),
+    aiBrief: z.string().trim().max(5000).optional()
   })
   .refine(
     ({ start, end }) => listDays(start, end).length > 0,
     'Огнооны зөрүү 0–29 хоног байх ёстой.'
   );
 
+const coordinate = (min:number,max:number) =>
+  z.preprocess(value => value === '' || value === null || value === undefined
+    ? undefined : Number(value), z.number().min(min).max(max).optional());
+
 export const stopFields = z.object({
-  destination: destinationId,
+  destination: z.union([destinationId,z.literal('custom')]),
+  customName: z.string().trim().max(140).optional(),
+  customAddress: z.string().trim().max(320).optional(),
+  lat: coordinate(-90,90),
+  lon: coordinate(-180,180),
   day: z.iso.date(),
   time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
   duration: integer(5, 1440),
   cost: amount,
   notes: z.string().trim().max(2000)
+}).superRefine((stop, context) => {
+  if (stop.destination === 'custom') {
+    if (!stop.customName?.trim())
+      context.addIssue({code:'custom',path:['customName'],message:'Газрын нэр шаардлагатай.'});
+    if (stop.lat === undefined || stop.lon === undefined)
+      context.addIssue({code:'custom',path:['lat'],message:'Газрын зураг дээр цэг сонгоно уу.'});
+  }
 });
 export const expenseFields = z.object({
   note: text,
