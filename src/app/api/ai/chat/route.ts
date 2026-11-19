@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server';
-import { generateText } from 'ai';
 import { z } from 'zod';
 import { optionalUser } from '@/lib/wanderly/auth';
 import { reserveAiRequest } from '@/lib/wanderly/ai-quota';
 import { destinations } from '@/features/wanderly/catalog';
-import {gatewayCredentialsAvailable} from '@/lib/wanderly/ai-gateway-auth';
-import {friendlyGatewayError} from '@/features/wanderly/ai-errors';
+import {freeAiConfigured,freeAICompletion,friendlyFreeAIError,FREE_AI_PROVIDER} from '@/lib/wanderly/free-ai';
 
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
@@ -21,8 +19,8 @@ const schema=z.object({
 export async function POST(request:Request){
  const user=await optionalUser();
  if(!user)return NextResponse.json({error:'AI туслах ашиглахын тулд нэвтэрнэ үү.'},{status:401});
- if(!gatewayCredentialsAvailable(request))
-  return NextResponse.json({error:'AI Gateway одоогоор идэвхгүй байна. Газрын зураг болон дүрэмт төлөвлөгчийг ашиглаж болно.'},{status:503});
+ if(!freeAiConfigured())
+  return NextResponse.json({error:'Үнэгүй AI-ийн GroqCloud API түлхүүр хараахан холбогдоогүй байна.'},{status:503});
  let requestBody:unknown;
  try{
   const raw=await request.text();
@@ -37,32 +35,27 @@ export async function POST(request:Request){
  if(quota!=='ok')return NextResponse.json({error:'AI ашиглалтын хязгаарыг шалгаж чадсангүй.'},{status:503});
  const catalogue=destinations.map(place=>place.name+' ('+place.region+')').join(', ');
  try{
-  const response=await generateText({
-   model:process.env.AI_GATEWAY_MODEL||'google/gemini-2.5-flash-lite',
-   instructions:[
-    'Та Wanderly-ийн аяллын туслах. Зөвхөн Монгол хэлээр, товч ойлгомжтой, дулаан хариул.',
-    'Хэрэглэгч хүссэн газар, аймаг, хот, дэлхийн аль ч байршлын талаар асууж болно.',
-    'Мэдэгдэж байгаа жишээ каталоги: '+catalogue+'. Энэ жагсаалт хязгаар биш.',
-    'Аяллын маршрут, байршлын яг зөв координат, зай, замын хугацаа, бодит үнэ, цаг агаарын төлөвийг эх сурвалжгүйгээр баталгаатай мэт бүү хэл.',
-    'Баталгаагүй үнэ өгвөл зөвхөн хэрэглэгчийн өөрийн төсвийг ангилан төлөвлөх жишээ гэж тодорхойл.',
-    'Газрын зураг дээр дурын цэг сонгож болох, маршрут API түлхүүртэй үед бодит чиглэл тооцдог гэж зөвлө.',
-    'Санал 3-6 товч мөр, шаардлагатай үед өдрийн хөтөлбөрийг цэгцтэй өг.',
-    'Нууц мэдээлэл, баталгаагүй захиалга, худал замын цаг бүү зохио.'
-   ].join('\n'),
-   prompt:JSON.stringify({
-    history:parsed.data.history.map(h=>({role:h.role,text:h.content})),
-    question:parsed.data.message
-   }),
-   maxOutputTokens:1100,
-   abortSignal:AbortSignal.timeout(22000)
+  const answer=await freeAICompletion({
+   messages:[
+    {role:'system',content:[
+     'Та Wanderly-ийн аяллын туслах. Зөвхөн Монгол хэлээр, товч ойлгомжтой, дулаан хариул.',
+     'Хэрэглэгч дэлхийн аль ч газар, аймаг, хотын талаар асууж болно.',
+     'Жишээ каталоги: '+catalogue+'. Энэ нь сонголтын хязгаар биш.',
+     'Баталгаагүй замын цаг, координат, бодит үнэ, цаг агаар, захиалга бүү зохио.',
+     'Баталгаатай маршрут зөвхөн гео-routing API-аас авна. Газар сонгохдоо газрын зураг ашиглаж болно.',
+     'Эхлээд хэрэгцээнд тохирох товч зөвлөгөө өг. Нууц мэдээлэл бүү оруул.'
+    ].join('\n')},
+    ...parsed.data.history.map(h=>({role:h.role,content:h.content})),
+    {role:'user',content:parsed.data.message}
+   ],
+   maxTokens:1700
   });
-  if(!response.text.trim())throw new Error('Empty model response');
-  return NextResponse.json({answer:response.text.slice(0,6000),source:'ai',
+  return NextResponse.json({answer:answer.slice(0,6000),source:'ai',provider:FREE_AI_PROVIDER,
    note:'AI-ийн зөвлөмж нь баталгаатай үнэ, маршрут, цаг агаарын мэдээлэл биш.'},
    {headers:{'Cache-Control':'private,no-store'}});
  }catch(error){
-  const failure=friendlyGatewayError(error);
-  console.error('Wanderly AI chat failed',error instanceof Error?error.name:'unknown',failure.status);
+  const failure=friendlyFreeAIError(error);
+  console.error('Wanderly Free AI chat failed',error instanceof Error?error.name:'unknown',failure.status);
   return NextResponse.json(failure,{status:failure.status,headers:{'Cache-Control':'no-store'}});
  }
 }

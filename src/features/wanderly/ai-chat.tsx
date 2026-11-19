@@ -59,12 +59,12 @@ export function AIChat({demo=false}:{demo?:boolean}){
    <div className='v4-chat-head-icon'><IconSparkles size={23}/></div>
    <div><p className='v4-overline'>WANDERLY AI</p><h2>AI Аяллын туслах</h2>
     <p>Танд тохирсон маршрутын санааг ярилцаж бүтээе.</p></div>
-   <span className='v4-chat-live'>AI Gateway</span>
+   <span className='v4-chat-live'>Үнэгүй AI · Groq</span>
   </div>
   {aiStatus && !demo && <p className={'v4-chat-service-state'+(!aiStatus.configured?' unavailable':'')}>
     {aiStatus.configured
-      ? 'AI үйлчилгээ тохируулагдсан · 24 цагт үлдсэн '+aiStatus.remaining+' хүсэлт'
-      : 'AI үйлчилгээний холболт одоогоор тохируулагдаагүй. Дүрэмт төлөвлөгчийг ашиглаж болно.'}
+      ? 'Үнэгүй AI холбогдсон · 24 цагт үлдсэн '+aiStatus.remaining+' хүсэлт'
+      : 'Үнэгүй GroqCloud AI-ийн түлхүүр холбогдоогүй байна. Дүрэмт төлөвлөгч ажиллана.'}
     <small>Энэ бол тохиргооны төлөв; бодит модель хариулах эсэх нь хүсэлт илгээхэд шалгагдана.</small>
    </p>}
   <div className='v4-chat-history' aria-live='polite' aria-busy={loading}>
