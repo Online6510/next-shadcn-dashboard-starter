@@ -5,6 +5,8 @@ import { reserveAiRequest } from '@/lib/wanderly/ai-quota';
 import { plannerFields } from '@/features/wanderly/planner';
 import { aiPlanSchema } from '@/features/wanderly/ai-schema';
 import { destinations } from '@/features/wanderly/catalog';
+import {gatewayCredentialsAvailable} from '@/lib/wanderly/ai-gateway-auth';
+import {friendlyGatewayError} from '@/features/wanderly/ai-errors';
 
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
@@ -13,7 +15,7 @@ const model = process.env.AI_GATEWAY_MODEL || 'google/gemini-2.5-flash-lite';
 export async function POST(request: Request) {
   const user=await optionalUser();
   if(!user) return NextResponse.json({error:'Нэвтрээд AI төлөвлөгч ашиглана уу.'},{status:401});
-  if(!process.env.VERCEL_OIDC_TOKEN && !process.env.AI_GATEWAY_API_KEY)
+  if(!gatewayCredentialsAvailable(request))
     return NextResponse.json({error:'AI үйлчилгээ одоогоор холбогдоогүй байна. Дүрэмт төлөвлөгчийг ашиглаж болно.'},{status:503});
   const length=Number(request.headers.get('content-length') || 0);
   if(length > 12000) return NextResponse.json({error:'Хүсэлтийн хэмжээ хэтэрсэн.'},{status:413});
@@ -42,7 +44,8 @@ export async function POST(request: Request) {
       output:Output.object({schema:aiPlanSchema}),
       instructions:`Та Wanderly Монголын аяллын төлөвлөгчийн туслах. Хэрэглэгчид зөвхөн өгөгдсөн газруудын ID-гаар 1–7 хоногийн аяллын санал өг. Зөвхөн Монгол хэлээр бич. Төсвийн бодит баталгаатай үнэ, замын үргэлжлэх хугацаа, аюулгүй байдлын баталгааг зохиож болохгүй. Худал үнэлгээ, захиалга, зочид буудлын үнэ бүү зохио. Хэрэглэгчийн тохируулсан хоногоос хэтрүүлж болохгүй. Өдөр бүр 1–3 газар, газар бүрийг нэг удаа санал болго. Нэг өдөр газарзүйн ойр аймгийн газрууд байвал давуу. Маршрутын бодит зам/цаг тооцоогүй гэдгийг зөвлөмждөө тодорхойл.`,
       prompt:JSON.stringify({request:input,knownDestinations:catalog}),
-      maxOutputTokens:1400
+      maxOutputTokens:1400,
+      abortSignal:AbortSignal.timeout(25000)
     });
     const ai=aiPlanSchema.parse(response.output);
     const seen=new Set<string>();
@@ -64,7 +67,8 @@ export async function POST(request: Request) {
       disclaimer:'AI-ийн санал нь бодит маршрут, үнэ, цаг агаарын баталгаа биш. Явахаасаа өмнө шалгаарай.'
     },{headers:{'Cache-Control':'private,no-store'}});
   } catch(error) {
-    console.error('Wanderly AI Gateway request failed',error instanceof Error?error.name:'unknown');
-    return NextResponse.json({error:'AI үйлчилгээ хариу өгөхгүй байна. Дүрэмт санал хэвийн ажиллана.'},{status:502});
+    const failure=friendlyGatewayError(error);
+    console.error('Wanderly AI itinerary failed',error instanceof Error?error.name:'unknown',failure.status);
+    return NextResponse.json(failure,{status:failure.status,headers:{'Cache-Control':'no-store'}});
   }
 }

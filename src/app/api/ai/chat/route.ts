@@ -4,6 +4,8 @@ import { z } from 'zod';
 import { optionalUser } from '@/lib/wanderly/auth';
 import { reserveAiRequest } from '@/lib/wanderly/ai-quota';
 import { destinations } from '@/features/wanderly/catalog';
+import {gatewayCredentialsAvailable} from '@/lib/wanderly/ai-gateway-auth';
+import {friendlyGatewayError} from '@/features/wanderly/ai-errors';
 
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
@@ -19,7 +21,7 @@ const schema=z.object({
 export async function POST(request:Request){
  const user=await optionalUser();
  if(!user)return NextResponse.json({error:'AI туслах ашиглахын тулд нэвтэрнэ үү.'},{status:401});
- if(!process.env.VERCEL_OIDC_TOKEN&&!process.env.AI_GATEWAY_API_KEY)
+ if(!gatewayCredentialsAvailable(request))
   return NextResponse.json({error:'AI Gateway одоогоор идэвхгүй байна. Газрын зураг болон дүрэмт төлөвлөгчийг ашиглаж болно.'},{status:503});
  let requestBody:unknown;
  try{
@@ -59,7 +61,8 @@ export async function POST(request:Request){
    note:'AI-ийн зөвлөмж нь баталгаатай үнэ, маршрут, цаг агаарын мэдээлэл биш.'},
    {headers:{'Cache-Control':'private,no-store'}});
  }catch(error){
-  console.error('Wanderly chat request failed',error instanceof Error?error.name:'unknown');
-  return NextResponse.json({error:'AI одоогоор хариулах боломжгүй байна. Газрын зураг болон дүрэмт төлөвлөгч ажиллах боломжтой.'},{status:502});
+  const failure=friendlyGatewayError(error);
+  console.error('Wanderly AI chat failed',error instanceof Error?error.name:'unknown',failure.status);
+  return NextResponse.json(failure,{status:failure.status,headers:{'Cache-Control':'no-store'}});
  }
 }

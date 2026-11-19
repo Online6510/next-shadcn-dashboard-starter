@@ -3,7 +3,7 @@
 Wanderly's AI chat and structured itinerary API use AI SDK 7 with the AI Gateway model `google/gemini-2.5-flash-lite` (or `AI_GATEWAY_MODEL`).
 
 ## Authentication
-Vercel deploys should use the project-scoped automatically refreshed `VERCEL_OIDC_TOKEN`. **Enable "OpenID Connect JSON Web Token generation" in Vercel Project Settings** via `oidcTokenConfig.enabled=true`. The ordinary project environment-variable list does not show this system-injected token. No static provider key or secret is needed on a properly configured Vercel deployment.
+Vercel deploys should use the project-scoped automatically refreshed `VERCEL_OIDC_TOKEN`. **Enable "OpenID Connect JSON Web Token generation" in Vercel Project Settings** via `oidcTokenConfig.enabled=true`. The ordinary project environment-variable list does not show this system-injected token. In serverless functions it is passed as the trusted `x-vercel-oidc-token` request header; checking only `process.env.VERCEL_OIDC_TOKEN` in a request handler gives a false negative. No static provider key or secret is needed on a properly configured Vercel deployment.
 
 For non-Vercel development only, configure an encrypted `AI_GATEWAY_API_KEY` with appropriate spending controls. Never add it to client-side variables, source or docs.
 
@@ -17,3 +17,6 @@ For non-Vercel development only, configure an encrypted `AI_GATEWAY_API_KEY` wit
 - Every actual model request may incur a small cost. Configure team/project budgets before enabling unrestricted traffic.
 
 Do not publish temporary diagnostic endpoints, API keys, user passwords, or complete model traces. Release production only after real user E2E and Gateway billing checks.
+
+## Verified OIDC handshake and billing blocker (2026-11-19)
+After enabling project OIDC, a guarded temporary Preview smoke test reached AI Gateway through its runtime request header. The Gateway returned HTTP 403, `customer verification required`: a valid payment card must be registered with the Vercel team before even free credits can be used. This is an account billing action, not a source-code problem. The application reports this distinctly rather than claiming inference is working. Temporary smoke-test routes are removed after diagnosis.
