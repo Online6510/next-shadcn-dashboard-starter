@@ -21,14 +21,14 @@ Branch: feat/wanderly-v4-atlas-experience (base feat/wanderly-supabase-productio
 ## Auth, Persistence, AI
 - Supabase Auth, Row Level Security, private journal Storage and V3 CRUD remain.
 - Critical V3 bug repaired: server action now awaits `updateTrip` for stop, expense, journal and move operations before revalidating and redirecting.
-- A free-form authenticated AI Gateway chat now appears on `/ai`; an AI-independent rules-based planner remains at `/trips/suggest`. Chat history is only in the current browser page, not persisted. **Real authenticated inference has not yet been independently E2E verified**. Users may always manually plan any location even when AI is down.
+- A free-form authenticated GroqCloud Free AI chat now appears on `/ai`; an AI-independent rules-based planner remains at `/trips/suggest`. Chat history is only in the current browser page, not persisted. **Real authenticated inference has not yet been independently E2E verified**. Users may always manually plan any location even when AI is down.
 - Existing AI suggested destinations are still curated for hallucination safety. AI output does not guarantee current road conditions, pricing, weather, or a booking.
 
 ## Environment and outstanding production gates
 - Vercel project: wanderly-mongolia
 - Supabase project: wanderly-mongolia, own private project, already applied `wanderly_geo_usage` table RLS.
 - Required for worldwide name search and provider-backed route: a **real Geoapify account API key** in Vercel as encrypted `GEOAPIFY_API_KEY` in Preview/Production. This key is NOT currently connected; map click and manually named coordinates work without it. A free or paid account is subject to provider limits.
-- Required before declaring user-ready: Supabase Dashboard Auth URL configuration, email confirmation, successful authenticated create/edit/delete trip with two test users, private image upload/read/delete, and successful live AI Gateway call; verify geo name search and directions once a valid Geoapify key is supplied.
+- Required before declaring user-ready: Supabase Dashboard Auth URL configuration, email confirmation, successful authenticated create/edit/delete trip with two test users, private image upload/read/delete, and successful live GroqCloud Free AI call; verify geo name search and directions once a valid Geoapify key is supplied.
 - Current Supabase Security Advisor reports `Leaked Password Protection Disabled`; enable leaked-password blocking in Supabase Auth settings when plan permits.
 - Current V4 branch is preview-only; do not merge/replace `main` or promote to the main production alias until above gates pass.
 - GitHub V4 QA verifies actual click-to-pin location, sign-in/sign-up UI tabs, optional custom trip cover, and a test-only trip editor without touching real user data.
@@ -50,3 +50,6 @@ For browser QA start Next.js with WANDERLY_VISUAL_PREVIEW=1 only in isolated dev
 - `Wanderly V4 Visual QA` browser script checks 6 breakpoints, arbitrary map click, editable custom stop, optional trip cover, sign-in/sign-up tabs and AI chat scroll state.
 - The latest visual regression fixed tablet navigation overflow, the clipped tablet trip sidebar and the oversized mobile login hero.
 - Supabase policies inspected for the trips, AI usage and geographic usage tables: all enforce owner-ID checks and have RLS enabled; this does **not** replace two-user authenticated end-to-end verification.
+
+## Card-free AI (V4 latest)
+The AI Chat and structured Planner endpoints are now exclusively backed by GroqCloud Free (`openai/gpt-oss-20b`) with server-only `GROQ_API_KEY`. No Vercel AI Gateway fallback exists, so no paid AI calls originate from these routes. Both endpoints remain disabled until a valid Free API key is placed in Vercel's encrypted Preview environment. The user must create the key under their own Groq Free account. More in [FREE_AI_SETUP.md](FREE_AI_SETUP.md).

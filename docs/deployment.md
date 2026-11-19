@@ -26,14 +26,13 @@ Configure email confirmation delivery/template and test a real registration, inb
 - `NEXT_PUBLIC_SUPABASE_URL` — Supabase project HTTPS URL (public).
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` — publishable project key; never use a secret/service-role key in NEXT_PUBLIC.
 - `NEXT_PUBLIC_SITE_URL` — public origin, used for Supabase confirmation callback. Set to the exact deployed origin and redeploy.
-- `AI_GATEWAY_MODEL` — verified AI Gateway model ID (default `google/gemini-2.5-flash-lite`).
-- `AI_GATEWAY_API_KEY` — only for local/non-Vercel runtimes if needed; keep encrypted. Vercel can use `VERCEL_OIDC_TOKEN` for AI Gateway automatically.
+- `GROQ_API_KEY` — server-side GroqCloud Free API key for the V4 AI chat and itinerary planner. Add as an encrypted Sensitive variable for Preview; card not required. See [FREE_AI_SETUP.md](FREE_AI_SETUP.md).
 
 Connect Supabase, run the build, create a **Preview** deployment from the Supabase branch, and test sign-up plus full app functionality before promoting to production. Preview deployments may be Vercel Authentication protected.
 
 ## AI model costs and safety
 
-AI model usage may be billable depending on the team's Gateway credits and settings. The app enforces a basic 5-per-24-hour quota per signed-in user via `wanderly_ai_usage`. For public use set an AI Gateway/team-level spend cap and monitor usage; app-side quotas alone are not a billing guarantee.
+V4 AI uses GroqCloud Free with free-tier quota and no paid Gateway fallback. Keep the provider account on **Free**, do not upgrade it. The app enforces a shared 5-per-24-hour quota per signed-in user via a Supabase atomic RPC; GroqCloud independently enforces per-model limits.
 
 AI suggestions are restricted to the curated destinations catalog. Users can review and save a suggestion; road route metrics, live prices, reservations, and weather are **not verified** by the LLM.
 
