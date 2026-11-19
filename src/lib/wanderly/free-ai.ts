@@ -54,16 +54,13 @@ export async function freeAICompletion(options:{
     json_schema:{name:'wanderly_travel_plan',strict:true,schema:options.responseSchema}}
   }:{})
  };
- let response:Response;
- try{
-  response=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+ const response=await fetch('https://api.groq.com/openai/v1/chat/completions',{
    method:'POST',
    headers:{Authorization:'Bearer '+key,'Content-Type':'application/json'},
    body:JSON.stringify(input),
    signal:AbortSignal.timeout(27000),
    cache:'no-store'
   });
- }catch(error){throw error;}
  if(!response.ok){
   // Do not read, log or echo raw error response; it may contain user data.
   if(response.status===401||response.status===403)throw new FreeAIError(503,
